@@ -1,22 +1,437 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Toca da Onca - 1000 Agentes IA Enterprise</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>:root{--bg:#050810;--s1:#0a0f1a;--s2:#0f1525;--s3:#141c30;--bdr:#1a2540;--acc:#ff6d00;--acc2:#ff9100;--g:#00e676;--y:#ffd600;--r:#ff1744;--b:#29b6f6;--p:#b388ff;--pk:#f06292;--t:#8899bb;--dim:#4a5a7a}*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t);height:100vh;overflow:hidden;font-size:12px}.top{height:44px;background:linear-gradient(90deg,#080d18,#0e1628);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 14px;gap:12px}.top .logo{font-size:15px;font-weight:800;background:linear-gradient(135deg,#ff6d00,#ffd600);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:6px;white-space:nowrap}.top .logo i{font-size:18px;-webkit-text-fill-color:#ff6d00}.sp{width:1px;height:26px;background:var(--bdr)}.ki{padding:3px 10px;background:rgba(255,255,255,.02);border:1px solid var(--bdr);border-radius:5px;text-align:center;min-width:70px}.ki .kv{font-size:14px;font-weight:700;line-height:1.1}.ki .kl{font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}.pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--g);box-shadow:0 0 6px var(--g);animation:pu 2s infinite;margin-right:4px}@keyframes pu{0%,100%{opacity:1}50%{opacity:.3}}.top .rt{margin-left:auto;display:flex;align-items:center;gap:10px;font-family:monospace;color:var(--dim)}.nav{height:34px;background:var(--s1);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 14px;gap:2px}.nt{padding:5px 14px;border-radius:5px 5px 0 0;cursor:pointer;font-size:11px;color:var(--dim);transition:.15s;border:1px solid transparent;border-bottom:none;display:flex;align-items:center;gap:5px;font-weight:500}.nt:hover{color:#ddd;background:rgba(255,255,255,.03)}.nt.a{color:var(--acc);background:var(--s2);border-color:var(--bdr);font-weight:700}.pages{height:calc(100vh - 78px);overflow:hidden}.page{display:none;height:100%;overflow:hidden}.page.show{display:flex}/*P0 OVERVIEW*/.p0{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;grid-template-rows:auto 1fr;gap:10px;padding:12px;overflow-y:auto}.krow{grid-column:1/-1;display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.kc{background:var(--s2);border:1px solid var(--bdr);border-radius:8px;padding:12px;text-align:center;position:relative;overflow:hidden}.kc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}.kc .kcv{font-size:22px;font-weight:800;line-height:1.2}.kc .kcl{font-size:9px;color:var(--dim);text-transform:uppercase;margin-top:2px}.kc .kcs{font-size:9px;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:3px}.pn{background:var(--s2);border:1px solid var(--bdr);border-radius:8px;padding:12px;overflow:hidden;display:flex;flex-direction:column}.pn .ph{font-size:11px;font-weight:700;color:var(--acc);margin-bottom:8px;display:flex;align-items:center;gap:6px}.pn .ph .badge{margin-left:auto;padding:2px 6px;border-radius:8px;font-size:8px;font-weight:600}/*SQUAD CARDS*/.sqg{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;flex:1;overflow-y:auto}.sqc{background:var(--s1);border:1px solid var(--bdr);border-radius:6px;padding:10px;cursor:pointer;transition:.2s;position:relative}.sqc:hover{border-color:var(--acc);transform:translateY(-1px)}.sqc .sqh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}.sqc .sqn{font-size:10px;font-weight:700;display:flex;align-items:center;gap:4px}.sqc .sqnum{font-size:16px;font-weight:800}.sqc .bar{height:2px;background:#1a2535;border-radius:1px;margin:4px 0}.sqc .bf{height:100%;border-radius:1px;transition:width 1.5s}.sqc .sqd{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:6px}.sqc .sdi{text-align:center}.sqc .sdv{font-size:11px;font-weight:700}.sqc .sdl{font-size:7px;color:var(--dim)}/*AGENT TABLE*/.atbl{width:100%;border-collapse:collapse;font-size:10px}.atbl th{text-align:left;padding:5px 6px;color:var(--dim);font-size:9px;text-transform:uppercase;border-bottom:1px solid var(--bdr);position:sticky;top:0;background:var(--s2)}.atbl td{padding:5px 6px;border-bottom:1px solid rgba(26,37,64,.5)}.atbl tr:hover{background:rgba(255,109,0,.03)}.dot{width:6px;height:6px;border-radius:50%;display:inline-block}.dot.on{background:var(--g);box-shadow:0 0 4px var(--g)}.dot.busy{background:var(--y);box-shadow:0 0 4px var(--y);animation:pu 1.2s infinite}.dot.off{background:var(--r)}/*P1 AGENTS*/.p1{display:grid;grid-template-columns:260px 1fr;height:100%;overflow:hidden}.aleft{background:var(--s1);border-right:1px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden}.aleft .ah{padding:8px 10px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--acc)}.aleft .asearch{margin:6px 8px;padding:5px 8px;background:var(--s2);border:1px solid var(--bdr);border-radius:4px;color:var(--t);font-size:10px;outline:none}.aleft .asearch:focus{border-color:var(--acc)}.alist{flex:1;overflow-y:auto;padding:4px}.ag{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:5px;cursor:pointer;transition:.12s;border:1px solid transparent;margin-bottom:1px}.ag:hover{background:rgba(255,255,255,.03);border-color:var(--bdr)}.ag.sel{background:rgba(255,109,0,.06);border-color:rgba(255,109,0,.3)}.ag .ai{flex:1;min-width:0}.ag .an{font-size:10px;font-weight:600;color:#c8d6e5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ag .as{font-size:8px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ag .at{font-size:9px;font-weight:700;margin-left:auto}/*DETAIL*/.aright{overflow-y:auto;padding:12px}.det{background:var(--s2);border:1px solid var(--bdr);border-radius:8px;padding:14px;margin-bottom:10px}.det .dh{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--bdr);margin-bottom:10px}.det .dav{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}.det .dn{font-size:14px;font-weight:700;color:#fff}.det .dr{font-size:9px;color:var(--dim)}.det .dst{margin-left:auto;padding:3px 10px;border-radius:10px;font-size:9px;font-weight:700}.det .dst.on{background:rgba(0,230,118,.1);color:var(--g)}.det .dst.busy{background:rgba(255,214,0,.1);color:var(--y)}.dm4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}.dm4 .d{background:rgba(255,255,255,.02);border-radius:5px;padding:8px;text-align:center}.dm4 .dv{font-size:14px;font-weight:700}.dm4 .dl{font-size:7px;color:var(--dim);text-transform:uppercase}.tsk{font-size:10px;border-left:2px solid var(--bdr);padding:4px 8px;margin-bottom:3px;border-radius:0 3px 3px 0;display:flex;align-items:center;gap:6px}.tsk.run{border-color:var(--g);background:rgba(0,230,118,.03)}.tsk.que{border-color:var(--b);background:rgba(41,182,246,.03)}.tsk.don{border-color:var(--bdr);opacity:.5}.tsk .tt{flex:1}.tsk .tm{font-size:8px;color:var(--dim);font-family:monospace;margin-left:auto}/*CHART*/.cht{height:70px;display:flex;align-items:flex-end;gap:1px}.cht .cb{flex:1;border-radius:1px 1px 0 0;transition:height .6s;min-width:1px}/*FEED*/.fe{padding:4px 6px;margin-bottom:2px;border-radius:3px;font-size:9px;border-left:2px solid var(--bdr);animation:sL .2s ease}.fe.s{border-color:var(--g)}.fe.i{border-color:var(--b)}.fe.w{border-color:var(--y)}.fe.e{border-color:var(--r)}.fe .ft{color:var(--dim);font-family:monospace;font-size:8px}.fe .fn{font-weight:700;color:#ddd}.fe .fa{color:var(--t)}@keyframes sL{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}/*P2 PERFORMANCE*/.p2{padding:12px;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:10px}.p2 .full{grid-column:1/-1}/*P3 NEURAL*/.p3{display:grid;grid-template-columns:1fr 300px;height:100%;overflow:hidden}.neural{position:relative;overflow:hidden;background:radial-gradient(ellipse at center,#0a1225 0%,#050810 70%)}.nnode{position:absolute;border-radius:50%;transition:all 2s ease}.nline{position:absolute;height:1px;transform-origin:left center;opacity:.15}/*SCROLL*/::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}::-webkit-scrollbar-thumb:hover{background:var(--dim)}</style></head><body><div class="top"><div class="logo"><i class="fas fa-paw"></i>TOCA DA ONCA | 1000 AGENTES IA</div><div class="sp"></div><div class="ki"><div class="kv" style="color:var(--g)" id="k0"><span class="pulse"></span>1000</div><div class="kl">Online</div></div><div class="ki"><div class="kv" style="color:var(--acc)" id="k1">0</div><div class="kl">Tarefas/min</div></div><div class="ki"><div class="kv" style="color:var(--b)" id="k2">0</div><div class="kl">Clientes</div></div><div class="ki"><div class="kv" style="color:var(--p)" id="k3">R$0</div><div class="kl">Receita</div></div><div class="ki"><div class="kv" style="color:var(--g)">99.97%</div><div class="kl">Uptime SLA</div></div><div class="ki"><div class="kv" style="color:var(--y)" id="k5">0</div><div class="kl">Self-Learn</div></div><div class="rt"><span class="pulse"></span>SISTEMA OPERACIONAL<span style="margin-left:8px" id="clk">--:--:--</span></div></div><div class="nav"><div class="nt a" onclick="go(0)"><i class="fas fa-th-large"></i>Overview</div><div class="nt" onclick="go(1)"><i class="fas fa-users-cog"></i>Agentes</div><div class="nt" onclick="go(2)"><i class="fas fa-chart-area"></i>Performance</div><div class="nt" onclick="go(3)"><i class="fas fa-project-diagram"></i>Rede Neural</div><div class="nt" onclick="go(4)"><i class="fas fa-brain"></i>Self-Learning</div><div class="nt" onclick="go(5)"><i class="fas fa-shield-alt"></i>Seguranca</div></div><div class="pages"><div class="page show" id="pg0"></div><div class="page" id="pg1"></div><div class="page" id="pg2"></div><div class="page" id="pg3"></div><div class="page" id="pg4"></div><div class="page" id="pg5"></div></div><script>
-const SQ=[{n:'Vendas Elite',i:'fa-shopping-cart',c:247,clr:'#ff6d00',tasks:['Processando venda','Negociando desconto','Fechando pedido','Upsell produto','Cross-sell item','Follow-up lead','Proposta orcamento','Convertendo lead','Qualificando prospect','Pipeline forecast']},{n:'Marketing Neural',i:'fa-brain',c:183,clr:'#b388ff',tasks:['Gerando campanha','Otimizando SEO','A/B testing','Segmentando audiencia','Criando copy IA','Analisando ROI','Disparando email','Trend analysis','Social listening','Content scoring']},{n:'Atendimento 24/7',i:'fa-headset',c:156,clr:'#00e676',tasks:['Respondendo ticket','Chat ao vivo','Resolvendo caso','Escalonando suporte','NPS survey','FAQ auto','Suporte L2','Callback agendado','Sentiment analysis','Voice bot']},{n:'Analytics Pro',i:'fa-chart-line',c:128,clr:'#29b6f6',tasks:['Dashboard update','Previsao demanda','Analise cohort','KPI monitoring','Data pipeline','ML training','Anomaly detect','Report auto','Clustering','Regression']},{n:'Seguranca IA',i:'fa-shield-alt',c:89,clr:'#ff1744',tasks:['Scan vulnerabilidade','Firewall monitor','Fraud detection','Audit log','Threat block','SSL verify','Backup encrypt','Patch deploy','Intrusion detect','Zero-trust check']},{n:'Logistica Smart',i:'fa-truck',c:197,clr:'#ffd600',tasks:['Tracking entrega','Otimizando rota','Gestao estoque','Processando envio','Separacao pedido','Conferencia carga','Calculo frete','Previsao ETA','Warehouse AI','Supply chain']}];
-const NM=['Luna','Atlas','Nova','Titan','Echo','Pulse','Nexus','Vega','Storm','Blaze','Frost','Cipher','Spark','Omega','Delta','Zenith','Orion','Falcon','Phoenix','Raven','Matrix','Byte','Flux','Volt','Core','Helix','Prism','Apex','Zion','Neo','Aria','Sage','Kira','Lynx','Onyx','Jade','Rex','Ivy','Axel','Iris'];
-let AG=[],sel=null,tTasks=0,tCli=0,tRev=0,learn=0,cData=[];
-function init(){let id=1;SQ.forEach((sq,si)=>{for(let j=0;j<sq.c;j++){const nm=NM[(id-1)%NM.length];const st=['on','on','on','on','on','on','busy','busy'][Math.floor(Math.random()*8)];AG.push({id:id++,nm:nm+'-'+sq.n.split(' ')[0]+'-'+String(j+1).padStart(3,'0'),sq:si,st,tk:sq.tasks[Math.floor(Math.random()*sq.tasks.length)]+' #'+Math.floor(Math.random()*9000+1000),td:Math.floor(Math.random()*300+50),cl:Math.floor(Math.random()*100+10),rv:Math.floor(Math.random()*8000+500),cpu:Math.floor(Math.random()*40+30),mem:Math.floor(Math.random()*30+20),acc:Math.floor(Math.random()*15+85),lat:Math.floor(Math.random()*40+8),learn:Math.floor(Math.random()*50+50),up:Math.floor(Math.random()*500+100)+'h'})}});for(let i=0;i<80;i++)cData.push(Math.floor(Math.random()*80+20));renderP0();startAll()}
-function go(n){document.querySelectorAll('.nt').forEach((t,i)=>t.classList.toggle('a',i===n));document.querySelectorAll('.page').forEach((p,i)=>{p.classList.toggle('show',i===n)});if(n===0)renderP0();if(n===1)renderP1();if(n===2)renderP2();if(n===3)renderP3();if(n===4)renderP4();if(n===5)renderP5()}
-function renderP0(){const el=document.getElementById('pg0');el.className='page show p0';el.innerHTML='<div class="krow">'+SQ.map(sq=>{const on=Math.floor(sq.c*.92+Math.random()*sq.c*.06);const eff=Math.floor(87+Math.random()*11);return'<div class="kc" style="border-top:2px solid '+sq.clr+'"><div class="kcv" style="color:'+sq.clr+'">'+sq.c+'</div><div class="kcl">'+sq.n+'</div><div class="kcs"><span class="dot on"></span>'+on+' online | '+eff+'%</div></div>'}).join('')+'</div><div class="pn" style="grid-column:1/3"><div class="ph"><i class="fas fa-th"></i>Esquadroes <span class="badge" style="background:rgba(255,109,0,.15);color:var(--acc)">6 ATIVOS</span></div><div class="sqg" id="sqGrid"></div></div><div class="pn" style="grid-column:3/5"><div class="ph"><i class="fas fa-chart-area"></i>Throughput 80min <span class="badge" style="background:rgba(0,230,118,.15);color:var(--g)">REAL-TIME</span></div><div class="cht" id="ch0"></div><div style="margin-top:10px"><div class="ph"><i class="fas fa-stream"></i>Feed Ao Vivo</div><div id="fd0" style="max-height:200px;overflow-y:auto"></div></div></div><div class="pn" style="grid-column:1/3"><div class="ph"><i class="fas fa-users"></i>Top Agentes Agora</div><div style="overflow-y:auto;max-height:220px"><table class="atbl"><thead><tr><th>Status</th><th>Agente</th><th>Esquadrao</th><th>Tarefa Atual</th><th>Tarefas</th><th>Receita</th></tr></thead><tbody id="topTbl"></tbody></table></div></div><div class="pn" style="grid-column:3/5"><div class="ph"><i class="fas fa-brain"></i>Self-Learning Engine <span class="badge" style="background:rgba(179,136,255,.15);color:var(--p)">BEAM AI TECH</span></div><div id="learnPanel"></div></div>';renderSqGrid();renderChart('ch0');renderTopTable();renderLearnPanel();startFeed('fd0')}
-function renderSqGrid(){const el=document.getElementById('sqGrid');if(!el)return;el.innerHTML=SQ.map((sq,i)=>{const on=Math.floor(sq.c*.92+Math.random()*sq.c*.06);const eff=Math.floor(87+Math.random()*11);const tph=Math.floor(on*(4+Math.random()*6));const rev=Math.floor(on*(80+Math.random()*200));const cl=Math.floor(on*(2+Math.random()*4));return'<div class="sqc" onclick="go(1)"><div class="sqh"><div class="sqn" style="color:'+sq.clr+'"><i class="fas '+sq.i+'"></i> '+sq.n+'</div><div class="sqnum" style="color:'+sq.clr+'">'+sq.c+'</div></div><div class="bar"><div class="bf" style="width:'+eff+'%;background:'+sq.clr+'"></div></div><div class="sqd"><div class="sdi"><div class="sdv" style="color:'+sq.clr+'">'+on+'</div><div class="sdl">Online</div></div><div class="sdi"><div class="sdv" style="color:'+sq.clr+'">'+tph+'</div><div class="sdl">Tasks/h</div></div><div class="sdi"><div class="sdv" style="color:'+sq.clr+'">R$'+rev.toLocaleString()+'</div><div class="sdl">Rev/h</div></div></div></div>'}).join('')}
-function renderChart(id){const el=document.getElementById(id);if(!el)return;el.innerHTML='';const mx=Math.max(...cData);const cls=['#ff6d00','#b388ff','#00e676','#29b6f6','#ffd600','#ff1744'];cData.forEach((v,i)=>{const h=Math.max(3,(v/mx)*65);const c=cls[i%cls.length];el.innerHTML+='<div class="cb" style="height:'+h+'px;background:'+c+';opacity:'+(0.4+v/mx*0.5)+'"></div>'})}
-function renderTopTable(){const el=document.getElementById('topTbl');if(!el)return;const top=AG.filter(a=>a.st!=='off').sort((a,b)=>b.td-a.td).slice(0,15);el.innerHTML=top.map(a=>'<tr><td><span class="dot '+a.st+'"></span></td><td style="font-weight:600;color:#ddd">'+a.nm+'</td><td style="color:'+SQ[a.sq].clr+'"><i class="fas '+SQ[a.sq].i+'" style="font-size:9px"></i> '+SQ[a.sq].n+'</td><td>'+a.tk+'</td><td style="font-weight:700;color:var(--acc)">'+a.td+'</td><td style="color:var(--g)">R$'+a.rv.toLocaleString()+'</td></tr>').join('')}
-function renderLearnPanel(){const el=document.getElementById('learnPanel');if(!el)return;const items=[{n:'Modelo de Vendas',v:94,c:'var(--acc)',d:'+2.3% hoje'},{n:'Modelo NLP',v:97,c:'var(--p)',d:'+0.8% hoje'},{n:'Fraud Detection',v:91,c:'var(--r)',d:'+1.5% hoje'},{n:'Demand Forecast',v:89,c:'var(--b)',d:'+3.1% hoje'},{n:'Route Optimize',v:96,c:'var(--y)',d:'+0.5% hoje'},{n:'Customer Score',v:93,c:'var(--g)',d:'+1.2% hoje'}];el.innerHTML=items.map(i=>'<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="font-weight:600">'+i.n+'</span><span style="color:'+i.c+'">'+i.v+'% <span style="color:var(--g);font-size:8px">'+i.d+'</span></span></div><div style="height:3px;background:#1a2535;border-radius:2px"><div style="height:100%;width:'+i.v+'%;background:'+i.c+';border-radius:2px;transition:width 2s"></div></div></div>').join('')}function renderP1(){const el=document.getElementById('pg1');el.className='page show p1';el.innerHTML='<div class="aleft"><div class="ah"><i class="fas fa-satellite-dish"></i>AGENTES <span style="color:var(--g)">'+AG.filter(a=>a.st!=='off').length+'</span></div><input class="asearch" placeholder="Buscar agente..." oninput="filterAg(this.value)"><div class="alist" id="aList"></div></div><div class="aright" id="aRight"><div style="text-align:center;padding:60px;color:var(--dim)"><i class="fas fa-mouse-pointer" style="font-size:40px;margin-bottom:12px;display:block;color:var(--bdr)"></i>Selecione um agente para ver detalhes</div></div>';renderAList()}
-function renderAList(filter){const el=document.getElementById('aList');if(!el)return;let list=AG.filter(a=>a.st!=='off');if(filter)list=list.filter(a=>a.nm.toLowerCase().includes(filter.toLowerCase()));el.innerHTML='';list.slice(0,50).forEach(a=>{const d=document.createElement('div');d.className='ag'+(sel===a.id?' sel':'');d.onclick=()=>{sel=a.id;renderAList();renderDetail()};d.innerHTML='<div class="dot '+a.st+'"></div><div class="ai"><div class="an">'+a.nm+'</div><div class="as">'+a.tk+'</div></div><div class="at" style="color:'+SQ[a.sq].clr+'">'+a.td+'</div>';el.appendChild(d)})}
-function filterAg(v){renderAList(v)}
-function renderDetail(){const el=document.getElementById('aRight');if(!el||!sel)return;const a=AG.find(x=>x.id===sel);const sq=SQ[a.sq];el.innerHTML='<div class="det"><div class="dh"><div class="dav" style="background:'+sq.clr+'15;color:'+sq.clr+'"><i class="fas '+sq.i+'"></i></div><div><div class="dn">'+a.nm+'</div><div class="dr">'+sq.n+' | ID: AGT-'+String(a.id).padStart(4,'0')+' | Uptime: '+a.up+'</div></div><div class="dst '+a.st+'">'+(a.st==='on'?'ATIVO':'PROCESSANDO')+'</div></div><div class="dm4"><div class="d"><div class="dv" style="color:var(--acc)">'+a.td+'</div><div class="dl">Tarefas</div></div><div class="d"><div class="dv" style="color:var(--b)">'+a.cl+'</div><div class="dl">Clientes</div></div><div class="d"><div class="dv" style="color:var(--g)">R$'+a.rv.toLocaleString()+'</div><div class="dl">Receita</div></div><div class="d"><div class="dv" style="color:var(--p)">'+a.learn+'%</div><div class="dl">Learn Score</div></div></div><div class="dm4"><div class="d"><div class="dv" style="color:'+(a.cpu>70?'var(--r)':'var(--g)')+'">'+a.cpu+'%</div><div class="dl">CPU</div></div><div class="d"><div class="dv" style="color:var(--b)">'+a.mem+'%</div><div class="dl">RAM</div></div><div class="d"><div class="dv" style="color:'+(a.lat>30?'var(--y)':'var(--g)')+'">'+a.lat+'ms</div><div class="dl">Latencia</div></div><div class="d"><div class="dv" style="color:var(--g)">'+a.acc+'%</div><div class="dl">Precisao</div></div></div></div><div class="det"><div class="ph"><i class="fas fa-tasks"></i>Fila de Tarefas em Execucao</div><div id="tList"></div></div><div class="det"><div class="ph"><i class="fas fa-chart-bar"></i>Performance 30min</div><div class="cht" id="agCht"></div></div>';const tl=document.getElementById('tList');for(let i=0;i<10;i++){const cls=i===0?'run':i<4?'que':'don';const task=sq.tasks[Math.floor(Math.random()*sq.tasks.length)];const tid=Math.floor(Math.random()*9000+1000);const tm=new Date();tm.setMinutes(tm.getMinutes()-i*2);tl.innerHTML+='<div class="tsk '+cls+'"><span>'+(cls==='run'?'<i class="fas fa-spinner fa-spin" style="color:var(--g)"></i>':cls==='que'?'<i class="fas fa-clock" style="color:var(--b)"></i>':'<i class="fas fa-check" style="color:var(--dim)"></i>')+'</span><span class="tt">'+task+' #'+tid+'</span><span class="tm">'+tm.toLocaleTimeString('pt-BR')+'</span></div>'}const agD=[];for(let i=0;i<30;i++)agD.push(Math.floor(Math.random()*60+20));const ch=document.getElementById('agCht');ch.innerHTML='';agD.forEach(v=>{ch.innerHTML+='<div class="cb" style="height:'+v+'px;background:'+sq.clr+';opacity:.6"></div>'})}
-function renderP2(){const el=document.getElementById('pg2');el.className='page show p2';const metrics=[{t:'Throughput Global',id:'pch1'},{t:'Receita Acumulada',id:'pch2'},{t:'Distribuicao de Carga',id:'pch3'},{t:'Latencia por Squad',id:'pch4'}];el.innerHTML='<div class="pn full"><div class="ph"><i class="fas fa-tachometer-alt"></i>Performance Geral do Sistema <span class="badge" style="background:rgba(0,230,118,.15);color:var(--g)">HEALTHY</span></div><div class="dm4"><div class="d"><div class="dv" style="color:var(--g)">99.97%</div><div class="dl">SLA Uptime</div></div><div class="d"><div class="dv" style="color:var(--acc)">18ms</div><div class="dl">Avg Latencia</div></div><div class="d"><div class="dv" style="color:var(--b)">1.2M</div><div class="dl">Req/hora</div></div><div class="d"><div class="dv" style="color:var(--p)">42TB</div><div class="dl">Data Processada</div></div></div></div>'+metrics.map(m=>'<div class="pn"><div class="ph"><i class="fas fa-chart-line"></i>'+m.t+'</div><div class="cht" id="'+m.id+'"></div></div>').join('');metrics.forEach(m=>{const d=[];for(let i=0;i<60;i++)d.push(Math.floor(Math.random()*70+20));const ch=document.getElementById(m.id);const mx=Math.max(...d);const cls=['#ff6d00','#b388ff','#00e676','#29b6f6','#ffd600'];d.forEach((v,i)=>{ch.innerHTML+='<div class="cb" style="height:'+Math.max(3,(v/mx)*65)+'px;background:'+cls[i%5]+';opacity:.6"></div>'})})}
-function renderP3(){const el=document.getElementById('pg3');el.className='page show p3';el.innerHTML='<div class="neural" id="nv"></div><div style="background:var(--s1);border-left:1px solid var(--bdr);padding:12px;overflow-y:auto"><div class="ph"><i class="fas fa-project-diagram"></i>Mapa Neural</div><div style="font-size:10px;color:var(--dim);margin-bottom:10px">Rede de 1000 nos com '+AG.length+' conexoes ativas</div><div id="nInfo"></div></div>';const nv=document.getElementById('nv');let html='';const colors=['#ff6d00','#b388ff','#00e676','#29b6f6','#ffd600','#ff1744'];for(let i=0;i<120;i++){const x=5+Math.random()*90;const y=5+Math.random()*90;const s=2+Math.random()*6;const c=colors[i%6];html+='<div class="nnode" style="left:'+x+'%;top:'+y+'%;width:'+s+'px;height:'+s+'px;background:'+c+';box-shadow:0 0 '+(s*3)+'px '+c+';animation:pu '+(1+Math.random()*4)+'s infinite '+(Math.random()*2)+'s"></div>'}for(let i=0;i<80;i++){const x=Math.random()*100;const y=Math.random()*100;const len=50+Math.random()*200;const ang=Math.random()*360;const c=colors[Math.floor(Math.random()*6)];html+='<div class="nline" style="left:'+x+'%;top:'+y+'%;width:'+len+'px;transform:rotate('+ang+'deg);background:'+c+'"></div>'}nv.innerHTML=html;const ni=document.getElementById('nInfo');ni.innerHTML=SQ.map(sq=>'<div style="margin-bottom:10px;padding:8px;background:var(--s2);border-radius:6px;border-left:2px solid '+sq.clr+'"><div style="font-weight:700;color:'+sq.clr+';font-size:11px"><i class="fas '+sq.i+'"></i> '+sq.n+'</div><div style="font-size:9px;margin-top:4px">Nos: '+sq.c+' | Conexoes: '+Math.floor(sq.c*3.7)+' | Latencia: '+Math.floor(8+Math.random()*20)+'ms</div></div>').join('')}
-function renderP4(){const el=document.getElementById('pg4');el.className='page show p2';const models=[{n:'Conversao Vendas',v:94,d:'+2.3%',t:'Aprendeu 847 padroes hoje'},{n:'NLP Atendimento',v:97,d:'+0.8%',t:'Refinou 1.2K respostas'},{n:'Fraud Detection',v:91,d:'+1.5%',t:'Bloqueou 234 tentativas'},{n:'Demand Forecast',v:89,d:'+3.1%',t:'Previu 567 picos de demanda'},{n:'Route Optimization',v:96,d:'+0.5%',t:'Otimizou 2.3K rotas'},{n:'Customer Scoring',v:93,d:'+1.2%',t:'Classificou 45K clientes'},{n:'Price Optimization',v:88,d:'+2.8%',t:'Ajustou 12K precos'},{n:'Inventory Predict',v:95,d:'+0.9%',t:'Previu 890 reposicoes'}];el.innerHTML='<div class="pn full"><div class="ph"><i class="fas fa-brain"></i>Self-Learning Engine 2.0 <span class="badge" style="background:rgba(179,136,255,.15);color:var(--p)">BEAM AI INSPIRED</span></div><div style="font-size:10px;color:var(--dim);margin-bottom:12px">Baseado na tecnologia Self-Learning 2.0 | SOP-Grounded Reasoning | Neuro-Symbolic Hybrid</div><div class="dm4"><div class="d"><div class="dv" style="color:var(--p)">8</div><div class="dl">Modelos Ativos</div></div><div class="d"><div class="dv" style="color:var(--g)">93.2%</div><div class="dl">Precisao Media</div></div><div class="d"><div class="dv" style="color:var(--acc)">12.4K</div><div class="dl">Padroes/Dia</div></div><div class="d"><div class="dv" style="color:var(--b)">24/7</div><div class="dl">Auto-Refinamento</div></div></div></div>'+models.map(m=>'<div class="pn"><div class="ph">'+m.n+' <span class="badge" style="background:rgba(0,230,118,.15);color:var(--g)">'+m.d+'</span></div><div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;font-size:10px"><span style="color:var(--t)">Precisao</span><span style="font-weight:700;color:var(--g)">'+m.v+'%</span></div><div style="height:4px;background:#1a2535;border-radius:2px;margin-top:3px"><div style="height:100%;width:'+m.v+'%;background:linear-gradient(90deg,var(--p),var(--g));border-radius:2px"></div></div></div><div style="font-size:9px;color:var(--dim)">'+m.t+'</div></div>').join('')}
-function renderP5(){const el=document.getElementById('pg5');el.className='page show p2';const threats=[{t:'DDoS Attempt',s:'BLOCKED',c:'var(--g)',tm:'14:32:10'},{t:'SQL Injection',s:'BLOCKED',c:'var(--g)',tm:'14:28:45'},{t:'Brute Force Login',s:'BLOCKED',c:'var(--g)',tm:'14:15:22'},{t:'Suspicious API Call',s:'MONITORED',c:'var(--y)',tm:'14:10:03'},{t:'Data Exfiltration',s:'BLOCKED',c:'var(--g)',tm:'13:58:17'},{t:'XSS Attempt',s:'BLOCKED',c:'var(--g)',tm:'13:45:30'}];el.innerHTML='<div class="pn full"><div class="ph"><i class="fas fa-shield-alt"></i>Central de Seguranca IA <span class="badge" style="background:rgba(0,230,118,.15);color:var(--g)">ALL CLEAR</span></div><div class="dm4"><div class="d"><div class="dv" style="color:var(--g)">SECURE</div><div class="dl">Status Global</div></div><div class="d"><div class="dv" style="color:var(--r)">2.4K</div><div class="dl">Ameacas Bloqueadas</div></div><div class="d"><div class="dv" style="color:var(--b)">256-bit</div><div class="dl">Encriptacao</div></div><div class="d"><div class="dv" style="color:var(--p)">SOX/LGPD</div><div class="dl">Compliance</div></div></div></div><div class="pn full"><div class="ph"><i class="fas fa-exclamation-triangle"></i>Ultimas Ameacas Detectadas</div><table class="atbl"><thead><tr><th>Hora</th><th>Tipo</th><th>Status</th><th>Acao</th></tr></thead><tbody>'+threats.map(t=>'<tr><td style="font-family:monospace">'+t.tm+'</td><td style="font-weight:600;color:#ddd">'+t.t+'</td><td style="color:'+t.c+';font-weight:700">'+t.s+'</td><td>Agente Seguranca IA</td></tr>').join('')+'</tbody></table></div>'}
-function startFeed(id){setInterval(()=>{const f=document.getElementById(id);if(!f)return;const sq=SQ[Math.floor(Math.random()*6)];const nm=NM[Math.floor(Math.random()*NM.length)];const tk=sq.tasks[Math.floor(Math.random()*sq.tasks.length)];const t=new Date().toLocaleTimeString('pt-BR');const tp=['s','i','w','s','s','i'][Math.floor(Math.random()*6)];const d=document.createElement('div');d.className='fe '+tp;d.innerHTML='<span class="ft">'+t+'</span> <span class="fn">'+nm+'</span> <span class="fa">'+tk+' #'+Math.floor(Math.random()*9000+1000)+'</span>';f.insertBefore(d,f.firstChild);if(f.children.length>60)f.removeChild(f.lastChild)},800)}
-function startAll(){setInterval(()=>{document.getElementById('clk').textContent=new Date().toLocaleTimeString('pt-BR')},1000);setInterval(()=>{AG.forEach(a=>{if(Math.random()<.25){const sq=SQ[a.sq];a.tk=sq.tasks[Math.floor(Math.random()*sq.tasks.length)]+' #'+Math.floor(Math.random()*9000+1000);a.td+=Math.floor(Math.random()*3);a.cl+=Math.random()<.2?1:0;a.rv+=Math.floor(Math.random()*150);a.cpu=Math.min(95,Math.max(15,a.cpu+Math.floor(Math.random()*9-4)));a.lat=Math.min(60,Math.max(5,a.lat+Math.floor(Math.random()*7-3)))}});tTasks+=Math.floor(Math.random()*400+200);tCli+=Math.floor(Math.random()*60+30);tRev+=Math.floor(Math.random()*10000+5000);learn+=Math.floor(Math.random()*5+1);document.getElementById('k1').textContent=Math.floor(800+Math.random()*500);document.getElementById('k2').textContent=tCli.toLocaleString();document.getElementById('k3').textContent='R$'+tRev.toLocaleString();document.getElementById('k5').textContent=learn;cData.shift();cData.push(Math.floor(Math.random()*80+20));const ch=document.getElementById('ch0');if(ch)renderChart('ch0');const tt=document.getElementById('topTbl');if(tt)renderTopTable()},3000)}
-init();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Toca da Onca - 1000 Agentes IA | Agentforce</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--sf-blue:#0176d3;--sf-dark:#032d60;--sf-light:#f4f6f9;--sf-white:#fff;--sf-green:#2e844a;--sf-orange:#fe9339;--sf-red:#ea001e;--sf-purple:#9050e9;--sf-border:#e5e5e5;--sf-text:#181818;--sf-gray:#706e6b;--sf-chat-bg:#f0f2f5;--radius:12px}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--sf-light);color:var(--sf-text);overflow-x:hidden}
+.topbar{background:var(--sf-dark);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;position:sticky;top:0;z-index:100}
+.topbar .logo{display:flex;align-items:center;gap:12px;font-size:18px;font-weight:700}
+.topbar .logo .icon{width:36px;height:36px;background:var(--sf-blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.topbar nav{display:flex;gap:8px}
+.topbar nav button{background:none;border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;transition:.2s}
+.topbar nav button:hover,.topbar nav button.active{background:var(--sf-blue);border-color:var(--sf-blue)}
+.topbar .status-badge{background:var(--sf-green);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.topbar .status-badge .pulse{width:8px;height:8px;background:#fff;border-radius:50%;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.hero{background:linear-gradient(135deg,var(--sf-dark) 0%,var(--sf-blue) 50%,#00a1e0 100%);padding:48px 32px;color:#fff;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;top:-50%;right:-20%;width:600px;height:600px;background:radial-gradient(circle,rgba(255,255,255,.08) 0%,transparent 70%);border-radius:50%}
+.hero h1{font-size:36px;font-weight:800;margin-bottom:8px}
+.hero p{font-size:16px;opacity:.85;max-width:600px}
+.hero .stats-row{display:flex;gap:32px;margin-top:24px;flex-wrap:wrap}
+.hero .stat{background:rgba(255,255,255,.12);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:var(--radius);padding:16px 24px;min-width:160px}
+.hero .stat .num{font-size:28px;font-weight:800}
+.hero .stat .lbl{font-size:12px;opacity:.8;margin-top:2px}
+.main{max-width:1400px;margin:0 auto;padding:24px}
+.section-title{font-size:20px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-title .badge{background:var(--sf-blue);color:#fff;font-size:11px;padding:3px 10px;border-radius:10px}
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:32px}
+.agent-card{background:var(--sf-white);border-radius:var(--radius);border:1px solid var(--sf-border);overflow:hidden;transition:.3s;cursor:pointer;position:relative}
+.agent-card:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,0,0,.1)}
+.agent-card .card-header{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid var(--sf-border)}
+.agent-card .avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;font-weight:700;position:relative;flex-shrink:0}
+.agent-card .avatar .status-dot{position:absolute;bottom:2px;right:2px;width:12px;height:12px;border-radius:50%;border:2px solid #fff}
+.agent-card .avatar .status-dot.online{background:var(--sf-green)}
+.agent-card .avatar .status-dot.busy{background:var(--sf-orange)}
+.agent-card .info h3{font-size:15px;font-weight:700}
+.agent-card .info .role{font-size:12px;color:var(--sf-gray)}
+.agent-card .info .squad{font-size:11px;color:var(--sf-blue);font-weight:600}
+.agent-card .card-body{padding:16px}
+.agent-card .task-current{background:var(--sf-chat-bg);border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.agent-card .task-current .spinner{width:16px;height:16px;border:2px solid var(--sf-blue);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.agent-card .metrics-row{display:flex;justify-content:space-between;font-size:12px;color:var(--sf-gray)}
+.agent-card .metrics-row .val{font-weight:700;color:var(--sf-text);font-size:14px}
+.agent-card .card-footer{display:flex;border-top:1px solid var(--sf-border)}
+.agent-card .card-footer button{flex:1;padding:10px;background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--sf-blue);transition:.2s}
+.agent-card .card-footer button:hover{background:var(--sf-light)}
+.agent-card .card-footer button:not(:last-child){border-right:1px solid var(--sf-border)}
+.chat-panel{position:fixed;right:0;top:56px;width:420px;height:calc(100vh - 56px);background:var(--sf-white);box-shadow:-4px 0 20px rgba(0,0,0,.12);z-index:99;display:flex;flex-direction:column;transform:translateX(100%);transition:.3s}
+.chat-panel.open{transform:translateX(0)}
+.chat-panel .chat-header{background:var(--sf-dark);color:#fff;padding:16px;display:flex;align-items:center;gap:12px}
+.chat-panel .chat-header .close-btn{margin-left:auto;background:none;border:none;color:#fff;font-size:20px;cursor:pointer}
+.chat-panel .chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--sf-chat-bg)}
+.chat-msg{max-width:85%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.chat-msg.agent{background:var(--sf-white);border:1px solid var(--sf-border);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-msg.system{background:var(--sf-blue);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.chat-msg .timestamp{font-size:10px;opacity:.6;margin-top:4px}
+.chat-panel .chat-input{display:flex;padding:12px;gap:8px;border-top:1px solid var(--sf-border)}
+.chat-panel .chat-input input{flex:1;padding:10px 14px;border:1px solid var(--sf-border);border-radius:20px;font-size:13px;outline:none}
+.chat-panel .chat-input input:focus{border-color:var(--sf-blue)}
+.chat-panel .chat-input button{background:var(--sf-blue);border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:16px}
+.activity-feed{background:var(--sf-white);border-radius:var(--radius);border:1px solid var(--sf-border);padding:20px;margin-bottom:32px}
+.feed-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0;animation:fadeIn .5s}
+.feed-item:last-child{border-bottom:none}
+.feed-item .feed-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0}
+.feed-item .feed-text{font-size:13px;line-height:1.5}
+.feed-item .feed-text strong{color:var(--sf-dark)}
+.feed-item .feed-time{font-size:11px;color:var(--sf-gray);margin-top:2px}
+.kpi-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+.kpi-card{background:var(--sf-white);border-radius:var(--radius);border:1px solid var(--sf-border);padding:20px;text-align:center}
+.kpi-card .kpi-icon{font-size:28px;margin-bottom:8px}
+.kpi-card .kpi-value{font-size:28px;font-weight:800;color:var(--sf-dark)}
+.kpi-card .kpi-label{font-size:12px;color:var(--sf-gray);margin-top:2px}
+.kpi-card .kpi-change{font-size:12px;margin-top:6px;font-weight:600}
+.kpi-card .kpi-change.up{color:var(--sf-green)}
+.kpi-card .kpi-change.down{color:var(--sf-red)}
+.progress-bar{height:6px;background:#e0e0e0;border-radius:3px;overflow:hidden;margin-top:8px}
+.progress-bar .fill{height:100%;border-radius:3px;transition:width 1s}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
+@media(max-width:900px){.two-col{grid-template-columns:1fr}.chat-panel{width:100%}}
+.squad-section{background:var(--sf-white);border-radius:var(--radius);border:1px solid var(--sf-border);padding:20px}
+.squad-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:15px;font-size:12px;font-weight:600;color:#fff;margin:4px}
+.network-viz{background:var(--sf-white);border-radius:var(--radius);border:1px solid var(--sf-border);padding:20px;height:300px;position:relative;overflow:hidden}
+.network-node{position:absolute;width:10px;height:10px;border-radius:50%;transition:all 2s}
+.network-line{position:absolute;height:1px;transform-origin:left center;opacity:.3}
+.page{display:none}.page.active{display:block}
+footer{text-align:center;padding:20px;color:var(--sf-gray);font-size:12px;border-top:1px solid var(--sf-border);margin-top:20px}
+.typing-indicator{display:flex;gap:4px;padding:8px 14px;align-self:flex-start}
+.typing-indicator span{width:6px;height:6px;background:var(--sf-gray);border-radius:50%;animation:typing 1.4s infinite}
+.typing-indicator span:nth-child(2){animation-delay:.2s}
+.typing-indicator span:nth-child(3){animation-delay:.4s}
+@keyframes typing{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="logo"><div class="icon">&#128025;</div>Toca da Onca Agentforce</div>
+<nav>
+<button class="active" onclick="showPage('overview')">Overview</button>
+<button onclick="showPage('agents')">Agentes</button>
+<button onclick="showPage('performance')">Performance</button>
+<button onclick="showPage('network')">Rede Neural</button>
+<button onclick="showPage('squads')">Esquadras</button>
+</nav>
+<div class="status-badge"><div class="pulse"></div>1000 Agentes Ativos</div>
+</div>
+
+<div class="hero">
+<h1>&#129302; Agentforce - Toca da Onca</h1>
+<p>Plataforma de Inteligencia Artificial com 1000 agentes autonomos trabalhando em tempo real para sua empresa.</p>
+<div class="stats-row">
+<div class="stat"><div class="num" id="hero-active">1000</div><div class="lbl">Agentes Ativos</div></div>
+<div class="stat"><div class="num" id="hero-tasks">0</div><div class="lbl">Tarefas Hoje</div></div>
+<div class="stat"><div class="num" id="hero-conv">0</div><div class="lbl">Conversas Ativas</div></div>
+<div class="stat"><div class="num" id="hero-acc">99.7%</div><div class="lbl">Precisao</div></div>
+</div>
+</div>
+
+<div class="main">
+<div id="page-overview" class="page active">
+<div class="kpi-bar" id="kpi-bar"></div>
+<div class="section-title">&#128172; Agentes Trabalhando Agora <span class="badge" id="working-count">0</span></div>
+<div class="agents-grid" id="agents-overview"></div>
+<div class="section-title">&#128196; Feed de Atividades em Tempo Real</div>
+<div class="activity-feed" id="activity-feed"></div>
+</div>
+
+<div id="page-agents" class="page">
+<div class="section-title">&#129302; Todos os 1000 Agentes <span class="badge">1000 Online</span></div>
+<div class="agents-grid" id="agents-full"></div>
+</div>
+
+<div id="page-performance" class="page">
+<div class="kpi-bar" id="perf-kpis"></div>
+<div class="section-title">&#128200; Metricas de Performance por Esquadra</div>
+<div class="two-col" id="perf-details"></div>
+</div>
+
+<div id="page-network" class="page">
+<div class="section-title">&#129504; Rede Neural de Comunicacao entre Agentes</div>
+<div class="network-viz" id="network-viz"></div>
+<div class="section-title" style="margin-top:24px">&#128257; Comunicacoes Recentes</div>
+<div class="activity-feed" id="network-feed"></div>
+</div>
+
+<div id="page-squads" class="page">
+<div class="section-title">&#127941; Esquadras de Agentes</div>
+<div id="squads-container"></div>
+</div>
+</div>
+
+<div class="chat-panel" id="chat-panel">
+<div class="chat-header">
+<div class="avatar" id="chat-avatar" style="width:40px;height:40px;font-size:18px"></div>
+<div><div id="chat-agent-name" style="font-weight:700"></div><div id="chat-agent-role" style="font-size:12px;opacity:.7"></div></div>
+<button class="close-btn" onclick="closeChat()">&#10005;</button>
+</div>
+<div class="chat-messages" id="chat-messages"></div>
+<div class="chat-input">
+<input type="text" id="chat-input-field" placeholder="Enviar comando ao agente..." onkeypress="if(event.key==='Enter')sendChat()">
+<button onclick="sendChat()">&#10148;</button>
+</div>
+</div>
+
+<footer>Toca da Onca Modas &copy; 2026 - Agentforce Platform - 1000 Agentes IA Autonomos</footer>
+
+<script>
+const SQUADS=[
+{name:'Vendas & CRM',color:'#0176d3',icon:'&#128176;',count:150,desc:'Prospeccao, qualificacao de leads, follow-up automatico'},
+{name:'Atendimento',color:'#2e844a',icon:'&#128172;',count:200,desc:'SAC multicanal, resolucao de tickets, satisfacao'},
+{name:'Marketing Digital',color:'#9050e9',icon:'&#128227;',count:120,desc:'Campanhas, SEO, redes sociais, analytics'},
+{name:'Estoque & Logistica',color:'#fe9339',icon:'&#128230;',count:130,desc:'Controle de estoque, entregas, fornecedores'},
+{name:'Financeiro',color:'#ea001e',icon:'&#128181;',count:100,desc:'Faturamento, contas, fluxo de caixa, DRE'},
+{name:'Analytics & BI',color:'#00a1e0',icon:'&#128202;',count:80,desc:'Dashboards, relatorios, previsoes de mercado'},
+{name:'Self-Learning',color:'#ff5d2d',icon:'&#129504;',count:70,desc:'Treinamento continuo, otimizacao de modelos'},
+{name:'Seguranca',color:'#032d60',icon:'&#128274;',count:50,desc:'Firewall IA, deteccao de fraude, compliance'},
+{name:'Integracao',color:'#1b96ff',icon:'&#128279;',count:60,desc:'APIs, webhooks, conectores, sincronizacao'},
+{name:'Automacao',color:'#c23934',icon:'&#9881;',count:40,desc:'Workflows, triggers, processos automaticos'}
+];
+
+const AGENT_NAMES=['Luna','Atlas','Nova','Phoenix','Orion','Stella','Titan','Aria','Zeus','Vega','Neo','Iris','Max','Aurora','Leo','Maya','Rex','Sage','Kai','Jade','Echo','Bolt','Cleo','Drake','Ember','Flux','Gaia','Halo','Ion','Jazz','Knox','Lyra','Milo','Nyx','Otto','Pax','Quinn','Ryu','Sol','Tara','Uma','Vale','Wren','Xara','Yuri','Zara','Apex','Byte','Crux','Dusk','Eon','Fern','Grit','Hawk','Ivy','Jolt','Kira','Link','Mars','Neon'];
+
+const TASKS=['Analisando tendencias de moda primavera 2026','Processando pedido #'+Math.floor(Math.random()*9000+1000),'Otimizando campanha Instagram Reels','Respondendo cliente via WhatsApp','Atualizando precos no catalogo online','Gerando relatorio de vendas semanal','Classificando leads por score de compra','Monitorando concorrentes online','Processando devolucao #'+Math.floor(Math.random()*900+100),'Sincronizando estoque com marketplace','Criando post para feed do Instagram','Analisando sentimento de reviews','Calculando margem de lucro por categoria','Otimizando rota de entrega','Detectando padrao de fraude em transacao','Treinando modelo de recomendacao','Gerando previsao de demanda mensal','Atualizando CRM com novos contatos','Processando pagamento via PIX','Enviando email marketing segmentado','Analisando metricas de conversao','Configurando chatbot para Black Friday','Integrando API do Mercado Livre','Realizando backup de dados criticos','Otimizando SEO da loja virtual'];
+
+const CONVERSATIONS={
+vendas:['Identifiquei 23 leads quentes no pipeline','Lead Maria Silva abriu email 3x - recomendo contato direto','Preparando proposta personalizada para cliente VIP','Score do lead atualizado: 87/100 - alta probabilidade','Agendei follow-up automatico para amanha 10h'],
+atendimento:['Ticket #4521 resolvido - tempo medio: 2min 34s','Cliente satisfeito - NPS 9/10 registrado','Encaminhando caso complexo para supervisor humano','Padrao detectado: 15 clientes perguntando sobre troca','Resposta automatica enviada em 800ms'],
+marketing:['CTR da campanha subiu 34% apos otimizacao A/B','Post agendado para 18h - horario de pico de engajamento','Relatorio de ROI: campanha gerando 5.2x retorno','Hashtags otimizadas baseadas em trending topics','Detectei oportunidade de parceria com influencer'],
+estoque:['Alerta: estoque de camisetas P abaixo do minimo','Pedido automatico enviado ao fornecedor #FL-2847','Previsao: demanda de vestidos +40% proximo mes','Rota de entrega otimizada - economia de 22% em frete','12 produtos novos catalogados com sucesso'],
+financeiro:['Fluxo de caixa positivo: +R$47.300 hoje','DRE mensal finalizado - margem liquida 18.5%','Boleto vencido detectado - cobranca automatica enviada','Previsao de receita Q2: R$1.2M (+15% vs Q1)','Conciliacao bancaria 100% automatizada hoje']
+};
+
+let agents=[];
+let tasksToday=0;
+let activeConvs=0;
+let chatAgent=null;
+let feedItems=[];
+
+function initAgents(){
+for(let i=0;i<1000;i++){
+const sq=SQUADS[i%SQUADS.length];
+const nm=AGENT_NAMES[i%AGENT_NAMES.length];
+agents.push({
+id:i,name:nm+'-'+(i+1).toString().padStart(4,'0'),squad:sq.name,squadColor:sq.color,squadIcon:sq.icon,
+avatar:nm[0],status:Math.random()>.05?'online':'busy',
+currentTask:TASKS[Math.floor(Math.random()*TASKS.length)],
+tasksCompleted:Math.floor(Math.random()*50+10),
+accuracy:(95+Math.random()*5).toFixed(1),
+responseTime:(Math.random()*2+0.3).toFixed(1)+'s',
+conversations:Math.floor(Math.random()*20),
+lastAction:Math.floor(Math.random()*300)
+});
+}
+tasksToday=Math.floor(Math.random()*5000+15000);
+activeConvs=Math.floor(Math.random()*200+300);
+}
+
+function renderKPIs(){
+const kpis=[
+{icon:'&#128640;',value:tasksToday.toLocaleString(),label:'Tarefas Completadas Hoje',change:'+12.4%',dir:'up'},
+{icon:'&#128172;',value:activeConvs,label:'Conversas Ativas Agora',change:'+8.7%',dir:'up'},
+{icon:'&#127919;',value:'99.7%',label:'Taxa de Precisao',change:'+0.3%',dir:'up'},
+{icon:'&#9889;',value:'0.8s',label:'Tempo Medio Resposta',change:'-15%',dir:'up'},
+{icon:'&#128176;',value:'R$127K',label:'Receita Gerada por IA',change:'+23.1%',dir:'up'},
+{icon:'&#11088;',value:'4.9/5',label:'Satisfacao do Cliente',change:'+0.2',dir:'up'}
+];
+document.getElementById('kpi-bar').innerHTML=kpis.map(k=>`<div class="kpi-card"><div class="kpi-icon">${k.icon}</div><div class="kpi-value">${k.value}</div><div class="kpi-label">${k.label}</div><div class="kpi-change ${k.dir}">${k.change}</div></div>`).join('');
+}
+
+function renderAgentCard(a){
+return`<div class="agent-card" onclick="openChat(${a.id})">
+<div class="card-header">
+<div class="avatar" style="background:${a.squadColor}">${a.avatar}<div class="status-dot ${a.status}"></div></div>
+<div class="info"><h3>${a.name}</h3><div class="role">${a.squad}</div><div class="squad">${a.squadIcon} Esquadra ${a.squad}</div></div>
+</div>
+<div class="card-body">
+<div class="task-current"><div class="spinner"></div>${a.currentTask}</div>
+<div class="metrics-row">
+<div><div class="val">${a.tasksCompleted}</div>tarefas</div>
+<div><div class="val">${a.accuracy}%</div>precisao</div>
+<div><div class="val">${a.responseTime}</div>resposta</div>
+</div>
+</div>
+<div class="card-footer">
+<button onclick="event.stopPropagation();openChat(${a.id})">&#128172; Chat</button>
+<button onclick="event.stopPropagation()">&#128202; Metricas</button>
+<button onclick="event.stopPropagation()">&#128196; Logs</button>
+</div>
+</div>`;
+}
+
+function renderOverview(){
+const top=agents.filter((_,i)=>i<12);
+document.getElementById('agents-overview').innerHTML=top.map(a=>renderAgentCard(a)).join('');
+document.getElementById('working-count').textContent=agents.filter(a=>a.status==='online').length;
+}
+
+function renderAllAgents(){
+const container=document.getElementById('agents-full');
+if(!container.children.length){
+container.innerHTML=agents.filter((_,i)=>i<60).map(a=>renderAgentCard(a)).join('');
+}
+  }
+
+function renderPerformance(){
+const kpis=[
+{icon:'&#128200;',value:'99.97%',label:'Uptime do Sistema',change:'+0.02%',dir:'up'},
+{icon:'&#128171;',value:'847ms',label:'Latencia Media',change:'-12%',dir:'up'},
+{icon:'&#129504;',value:'2.4TB',label:'Dados Processados Hoje',change:'+18%',dir:'up'},
+{icon:'&#128274;',value:'0',label:'Incidentes de Seguranca',change:'0%',dir:'up'}
+];
+document.getElementById('perf-kpis').innerHTML=kpis.map(k=>`<div class="kpi-card"><div class="kpi-icon">${k.icon}</div><div class="kpi-value">${k.value}</div><div class="kpi-label">${k.label}</div><div class="kpi-change ${k.dir}">${k.change}</div></div>`).join('');
+document.getElementById('perf-details').innerHTML=SQUADS.map(sq=>{
+const pct=Math.floor(85+Math.random()*15);
+return`<div class="squad-section"><h3 style="margin-bottom:12px">${sq.icon} ${sq.name} <span style="font-size:13px;color:var(--sf-gray)">(${sq.count} agentes)</span></h3>
+<p style="font-size:13px;color:var(--sf-gray);margin-bottom:12px">${sq.desc}</p>
+<div style="display:flex;justify-content:space-between;font-size:13px"><span>Eficiencia</span><span style="font-weight:700">${pct}%</span></div>
+<div class="progress-bar"><div class="fill" style="width:${pct}%;background:${sq.color}"></div></div>
+<div style="margin-top:12px;display:flex;gap:16px;font-size:12px;color:var(--sf-gray)">
+<span>Tarefas: <strong>${Math.floor(Math.random()*2000+500)}</strong></span>
+<span>Tempo: <strong>${(Math.random()*2+.5).toFixed(1)}s</strong></span>
+<span>Precisao: <strong>${(95+Math.random()*5).toFixed(1)}%</strong></span>
+</div></div>`;
+}).join('');
+}
+
+function renderNetwork(){
+const viz=document.getElementById('network-viz');
+viz.innerHTML='';
+const w=viz.offsetWidth,h=viz.offsetHeight;
+for(let i=0;i<40;i++){
+const node=document.createElement('div');
+node.className='network-node';
+const sq=SQUADS[i%SQUADS.length];
+node.style.cssText=`left:${Math.random()*90+5}%;top:${Math.random()*85+5}%;background:${sq.color};box-shadow:0 0 8px ${sq.color}`;
+viz.appendChild(node);
+}
+setInterval(()=>{
+viz.querySelectorAll('.network-node').forEach(n=>{
+n.style.left=Math.random()*90+5+'%';
+n.style.top=Math.random()*85+5+'%';
+n.style.transform=`scale(${.8+Math.random()*.8})`;
+});
+},3000);
+const feed=document.getElementById('network-feed');
+setInterval(()=>{
+const a1=agents[Math.floor(Math.random()*agents.length)];
+const a2=agents[Math.floor(Math.random()*agents.length)];
+const msgs=['compartilhou insight de dados','solicitou colaboracao em tarefa','enviou alerta de prioridade','sincronizou modelo atualizado','reportou anomalia detectada'];
+const html=`<div class="feed-item"><div class="feed-avatar" style="background:${a1.squadColor}">${a1.avatar}</div><div><div class="feed-text"><strong>${a1.name}</strong> ${msgs[Math.floor(Math.random()*msgs.length)]} com <strong>${a2.name}</strong></div><div class="feed-time">agora mesmo</div></div></div>`;
+feed.insertAdjacentHTML('afterbegin',html);
+if(feed.children.length>15)feed.removeChild(feed.lastChild);
+},4000);
+}
+
+function renderSquads(){
+document.getElementById('squads-container').innerHTML=SQUADS.map(sq=>{
+const sqAgents=agents.filter(a=>a.squad===sq.name).slice(0,6);
+return`<div class="squad-section" style="margin-bottom:20px">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+<span class="squad-tag" style="background:${sq.color};font-size:16px;padding:8px 16px">${sq.icon} ${sq.name}</span>
+<span style="font-size:14px;color:var(--sf-gray)">${sq.count} agentes ativos</span>
+</div>
+<p style="font-size:13px;color:var(--sf-gray);margin-bottom:16px">${sq.desc}</p>
+<div class="agents-grid">${sqAgents.map(a=>renderAgentCard(a)).join('')}</div>
+</div>`;
+}).join('');
+}
+
+function openChat(id){
+chatAgent=agents[id];
+const panel=document.getElementById('chat-panel');
+panel.classList.add('open');
+document.getElementById('chat-avatar').style.background=chatAgent.squadColor;
+document.getElementById('chat-avatar').textContent=chatAgent.avatar;
+document.getElementById('chat-agent-name').textContent=chatAgent.name;
+document.getElementById('chat-agent-role').textContent=chatAgent.squad;
+const msgs=document.getElementById('chat-messages');
+msgs.innerHTML='';
+addChatMsg('agent','Ola! Sou '+chatAgent.name+', agente da esquadra '+chatAgent.squad+'. Estou online e trabalhando. Como posso ajudar?');
+setTimeout(()=>addChatMsg('agent','Atualmente estou: '+chatAgent.currentTask),1500);
+setTimeout(()=>addChatMsg('agent','Ja completei '+chatAgent.tasksCompleted+' tarefas hoje com '+chatAgent.accuracy+'% de precisao.'),3000);
+startAgentConversation();
+}
+
+function closeChat(){document.getElementById('chat-panel').classList.remove('open');chatAgent=null;}
+
+function addChatMsg(type,text){
+const msgs=document.getElementById('chat-messages');
+const div=document.createElement('div');
+div.className='chat-msg '+type;
+const now=new Date();
+div.innerHTML=text+'<div class="timestamp">'+now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0')+':'+now.getSeconds().toString().padStart(2,'0')+'</div>';
+msgs.appendChild(div);
+msgs.scrollTop=msgs.scrollHeight;
+}
+
+function sendChat(){
+const input=document.getElementById('chat-input-field');
+const text=input.value.trim();
+if(!text||!chatAgent)return;
+addChatMsg('system',text);
+input.value='';
+const msgs=document.getElementById('chat-messages');
+const typing=document.createElement('div');
+typing.className='typing-indicator';
+typing.innerHTML='<span></span><span></span><span></span>';
+msgs.appendChild(typing);
+msgs.scrollTop=msgs.scrollHeight;
+setTimeout(()=>{
+typing.remove();
+const responses=['Entendido! Processando sua solicitacao agora...','Analisando dados... resultado disponivel em instantes.','Tarefa adicionada a minha fila de prioridade.','Iniciando analise com base nos parametros informados.','Gerando relatorio detalhado. Aguarde...'];
+addChatMsg('agent',responses[Math.floor(Math.random()*responses.length)]);
+},1500+Math.random()*1000);
+}
+
+let convInterval;
+function startAgentConversation(){
+clearInterval(convInterval);
+convInterval=setInterval(()=>{
+if(!chatAgent)return;
+const cats=Object.keys(CONVERSATIONS);
+const cat=cats[Math.floor(Math.random()*cats.length)];
+const msgs=CONVERSATIONS[cat];
+addChatMsg('agent','[Auto] '+msgs[Math.floor(Math.random()*msgs.length)]);
+},8000+Math.random()*7000);
+}
+
+function addFeedItem(){
+const a=agents[Math.floor(Math.random()*agents.length)];
+const actions=['completou tarefa','iniciou nova analise','enviou relatorio','resolveu ticket','atualizou dados','processou pedido','otimizou campanha','detectou anomalia','gerou previsao','sincronizou sistema'];
+const action=actions[Math.floor(Math.random()*actions.length)];
+const details=TASKS[Math.floor(Math.random()*TASKS.length)];
+const feed=document.getElementById('activity-feed');
+const html='<div class="feed-item"><div class="feed-avatar" style="background:'+a.squadColor+'">'+a.avatar+'</div><div><div class="feed-text"><strong>'+a.name+'</strong> '+action+': '+details+'</div><div class="feed-time">agora</div></div></div>';
+feed.insertAdjacentHTML('afterbegin',html);
+if(feed.children.length>20)feed.removeChild(feed.lastChild);
+}
+
+function updateMetrics(){
+tasksToday+=Math.floor(Math.random()*5+1);
+activeConvs=Math.floor(300+Math.random()*200);
+document.getElementById('hero-tasks').textContent=tasksToday.toLocaleString();
+document.getElementById('hero-conv').textContent=activeConvs;
+agents.forEach(a=>{
+if(Math.random()<.1)a.currentTask=TASKS[Math.floor(Math.random()*TASKS.length)];
+if(Math.random()<.05)a.tasksCompleted++;
+});
+}
+
+function showPage(page){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById('page-'+page).classList.add('active');
+document.querySelectorAll('.topbar nav button').forEach(b=>b.classList.remove('active'));
+event.target.classList.add('active');
+if(page==='agents')renderAllAgents();
+if(page==='performance')renderPerformance();
+if(page==='network')renderNetwork();
+if(page==='squads')renderSquads();
+}
+
+initAgents();
+renderKPIs();
+renderOverview();
+document.getElementById('hero-tasks').textContent=tasksToday.toLocaleString();
+document.getElementById('hero-conv').textContent=activeConvs;
+
+setInterval(addFeedItem,3000);
+setInterval(updateMetrics,5000);
+for(let i=0;i<8;i++)setTimeout(()=>addFeedItem(),i*500);
+</script>
+</body>
+</html>
