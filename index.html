@@ -596,6 +596,8 @@ function renderSquads(){
 /* =========================
    CONFIG MODAL (localStorage keys)
 ========================= */
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
 function openConfigModal(){
   const saved = localStorage.getItem('TOCADAONCA_GEMINI_KEYS_V1');
   const keys = saved ? JSON.parse(saved) : [];
@@ -604,9 +606,9 @@ function openConfigModal(){
     const k = keys[i] || {};
     return `<div class="key-row">
       <label>Chave ${i+1}</label>
-      <input type="password" id="key-inp-${i}" placeholder="AIza..." value="${k.key ? k.key.replace(/"/g,'&quot;') : ''}">
+      <input type="password" id="key-inp-${i}" placeholder="AIza..." value="${escHtml(k.key||'')}">
       <button class="eye-btn" onclick="toggleKeyVis(${i})" title="Mostrar/ocultar">&#128065;</button>
-      <input type="text" class="email-inp" id="email-inp-${i}" placeholder="email (opcional)" value="${k.email ? k.email.replace(/"/g,'&quot;') : ''}">
+      <input type="text" class="email-inp" id="email-inp-${i}" placeholder="email (opcional)" value="${escHtml(k.email||'')}">
     </div>`;
   }).join('');
   const statusEl = document.getElementById('modal-status-msg');
@@ -844,9 +846,9 @@ async function sendChat(){
       const r = await webSearch(query);
       t2.remove();
       if(r.ok){
-        addChatMsg('agent','&#128269; Resultados para <em>'+query+'</em>:<br>'+JSON.stringify(r.results).slice(0,500));
+        addChatMsg('agent','&#128269; Resultados para <em>'+escHtml(query)+'</em>:<br>'+escHtml(JSON.stringify(r.results).slice(0,500)));
       } else {
-        addChatMsg('agent','&#128683; Busca falhou: '+r.error+'<br><em>Configure um backend em <code>'+CONFIG.SEARCH_ENDPOINT+'</code> para buscas reais.</em>');
+        addChatMsg('agent','&#128683; Busca falhou: '+escHtml(r.error)+'<br><em>Configure um backend em <code>'+CONFIG.SEARCH_ENDPOINT+'</code> para buscas reais.</em>');
       }
       return;
     }
@@ -859,13 +861,13 @@ async function sendChat(){
         chatAgent.status = 'busy';
         chatAgent.currentTask = 'Aguardando 2FA para '+site;
         raiseSecurityAlert({title:'2FA / MFA Requerido', message:'Aguardando liberação de acesso para '+site, account:chatAgent.name});
-        addChatMsg('agent','&#128680; Login em <strong>'+site+'</strong> requer autenticação 2FA/MFA. Agente pausado até liberação.');
+        addChatMsg('agent','&#128680; Login em <strong>'+escHtml(site)+'</strong> requer autenticação 2FA/MFA. Agente pausado até liberação.');
         const tg = await notifyTelegram('Aguardando liberação de acesso para a conta: '+site+' ('+chatAgent.name+')');
         if(!tg.ok) addChatMsg('agent','&#9888; Backend Telegram não configurado ('+CONFIG.TELEGRAM_NOTIFY_ENDPOINT+'). Notificação não enviada.');
       } else if(r && r.ok){
-        addChatMsg('agent','&#10003; Fluxo de login iniciado para: <strong>'+site+'</strong>');
+        addChatMsg('agent','&#10003; Fluxo de login iniciado para: <strong>'+escHtml(site)+'</strong>');
       } else {
-        addChatMsg('agent','&#128683; Login falhou: '+(r?.error||'erro desconhecido')+'<br><em>Configure o backend em <code>'+CONFIG.LOGIN_ENDPOINT+'</code></em>');
+        addChatMsg('agent','&#128683; Login falhou: '+escHtml(r?.error||'erro desconhecido')+'<br><em>Configure o backend em <code>'+CONFIG.LOGIN_ENDPOINT+'</code></em>');
       }
       return;
     }
@@ -1018,6 +1020,7 @@ atualizarStatusPoolUI();
 setInterval(addFeedItem,3000);
 setInterval(updateMetrics,5000);
 for(let i=0;i<8;i++)setTimeout(()=>addFeedItem(),i*500);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeConfigModal(); });
 </script>
 </body>
 </html>
