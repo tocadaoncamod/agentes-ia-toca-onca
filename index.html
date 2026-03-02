@@ -1,21 +1,1218 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Toca da Onça</title>
-  <style>
-    body{font-family:system-ui,Segoe UI,Arial;margin:40px;background:#0f1117;color:#e8e8f0}
-    .card{max-width:720px;padding:20px;border:1px solid #2e3250;border-radius:12px;background:#1a1d27}
-    a{color:#f90}
-    code{background:#0003;padding:2px 6px;border-radius:6px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Toca da Onça – 1002 Agentes IA | Agentforce</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--sf-blue:#0176d3;--sf-dark:#032d60;--sf-light:#f4f6f9;--sf-white:#fff;--sf-green:#2e844a;--sf-orange:#fe9339;--sf-red:#ea001e;--sf-purple:#9050e9;--sf-border:#e5e5e5;--sf-text:#181818;--sf-gray:#706e6b;--sf-chat-bg:#f0f2f5;--radius:12px}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--sf-light);color:var(--sf-text);overflow-x:hidden}
+.topbar{background:var(--sf-dark);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;position:sticky;top:0;z-index:100}
+.topbar .logo{display:flex;align-items:center;gap:12px;font-size:18px;font-weight:700}
+.topbar .logo .icon{width:36px;height:36px;background:var(--sf-blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.topbar nav{display:flex;gap:8px}
+.topbar nav button{background:none;border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;transition:.2s}
+.topbar nav button:hover,.topbar nav button.active{background:var(--sf-blue);border-color:var(--sf-blue)}
+.topbar .status-badge{background:var(--sf-green);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.topbar .status-badge .pulse{width:8px;height:8px;background:#fff;border-radius:50%;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.hero{background:linear-gradient(135deg,var(--sf-dark) 0%,var(--sf-blue) 50%,#00a1e0 100%);padding:48px 32px;color:#fff;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;top:-50%;right:-20%;width:600px;height:600px;background:radial-gradient(circle,rgba(255,255,255,.08) 0%,transparent 70%);border-radius:50%}
+.hero h1{font-size:36px;font-weight:800;margin-bottom:8px}
+.hero p{font-size:16px;opacity:.85;max-width:600px}
+.hero .stats-row{display:flex;gap:32px;margin-top:24px;flex-wrap:wrap}
+.hero .stat{background:rgba(255,255,255,.12);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:var(--radius);padding:16px 24px;min-width:160px}
+.hero .stat .num{font-size:28px;font-weight:800}
+.hero .stat .lbl{font-size:12px;opacity:.8;margin-top:2px}
+.main{max-width:1400px;margin:0 auto;padding:24px}
+.section-title{font-size:20px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-title .badge{background:var(--sf-blue);color:#fff;font-size:11px;padding:3px 10px;border-radius:10px}
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:32px}
+.agent-card{background:var(--sf-white);border-radius:var(--radius);border:1px solid var(--sf-border);overflow:hidden;transition:.3s;cursor:pointer;position:relative}
+.agent-card:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,0,0,.1)}
+.agent-card .card-header{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid var(--sf-border)}
+.agent-card .avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;font-weight:700;position:relative;flex-shrink:0}
+.agent-card .avatar .status-dot{position:absolute;bottom:2px;right:2px;width:12px;height:12px;border-radius:50%;border:2px solid #fff}
+.agent-card .avatar .status-dot.online{background:var(--sf-green)}
+.agent-card .avatar .status-dot.busy{background:var(--sf-orange)}
+.agent-card .info h3{font-size:15px;font-weight:700}
+.agent-card .info .role{font-size:12px;color:var(--sf-gray)}
+.agent-card .info .squad{font-size:11px;color:var(--sf-blue);font-weight:600}
+.agent-card .card-body{padding:16px}
+.agent-card .task-current{background:var(--sf-chat-bg);border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.agent-card .task-current .spinner{width:16px;height:16px;border:2px solid var(--sf-blue);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.agent-card .metrics-row{display:flex;justify-content:space-between;font-size:12px;color:var(--sf-gray)}
+.agent-card .metrics-row .val{font-weight:700;color:var(--sf-text);font-size:14px}
+.agent-card .card-footer{display:flex;border-top:1px solid var(--sf-border)}
+.agent-card .card-footer button{flex:1;padding:10px;background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--sf-blue);transition:.2s}
+.agent-card .card-footer button:hover{background:var(--sf-light)}
+.agent-card .card-footer button:not(:last-child){border-right:1px solid var(--sf-border)}
+.chat-panel{position:fixed;right:0;top:56px;width:420px;height:calc(100vh - 56px);background:var(--sf-white);box-shadow:-4px 0 20px rgba(0,0,0,.12);z-index:99;display:flex;flex-direction:column;transform:translateX(100%);transition:.3s}
+.chat-panel.open{transform:translateX(0)}
+.chat-panel .chat-header{background:var(--sf-dark);color:#fff;padding:16px;display:flex;align-items:center;gap:12px}
+.chat-panel .chat-header .close-btn{margin-left:auto;background:none;border:none;color:#fff;font-size:20px;cursor:pointer}
+.chat-panel .chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--sf-chat-bg)}
+.chat-msg{max-width:85%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.chat-msg.agent{background:var(--sf-white);border:1px solid var(--sf-border);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-msg.system{background:var(--sf-blue);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.chat-msg .timestamp{font-size:10px;opacity:.6;margin-top:4px}
+.chat-panel .chat-input{display:flex;padding:12px;gap:8px;border-top:1px solid var(--sf-border)}
+.chat-panel .chat-input input{flex:1;padding:10px 14px;border:1px solid var(--sf-border);border-radius:20px;font-size:13px;outline:none}
+.chat-panel .chat-input input:focus{border-color:var(--sf-blue)}
+.chat-panel .chat-input button{background:var(--sf-blue);border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:16px}
+.activity-feed{background:var(--sf-white);border-radius:var(--radius);border:1px solid var(--sf-border);padding:20px;margin-bottom:32px}
+.feed-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0;animation:fadeIn .5s}
+.feed-item:last-child{border-bottom:none}
+.feed-item .feed-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0}
+.feed-item .feed-text{font-size:13px;line-height:1.5}
+.feed-item .feed-text strong{color:var(--sf-dark)}
+.feed-item .feed-time{font-size:11px;color:var(--sf-gray);margin-top:2px}
+.kpi-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+.kpi-card{background:var(--sf-white);border-radius:var(--radius);border:1px solid var(--sf-border);padding:20px;text-align:center}
+.kpi-card .kpi-icon{font-size:28px;margin-bottom:8px}
+.kpi-card .kpi-value{font-size:28px;font-weight:800;color:var(--sf-dark)}
+.kpi-card .kpi-label{font-size:12px;color:var(--sf-gray);margin-top:2px}
+.kpi-card .kpi-change{font-size:12px;margin-top:6px;font-weight:600}
+.kpi-card .kpi-change.up{color:var(--sf-green)}
+.kpi-card .kpi-change.down{color:var(--sf-red)}
+.progress-bar{height:6px;background:#e0e0e0;border-radius:3px;overflow:hidden;margin-top:8px}
+.progress-bar .fill{height:100%;border-radius:3px;transition:width 1s}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
+@media(max-width:900px){.two-col{grid-template-columns:1fr}.chat-panel{width:100%}}
+.squad-section{background:var(--sf-white);border-radius:var(--radius);border:1px solid var(--sf-border);padding:20px}
+.squad-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:15px;font-size:12px;font-weight:600;color:#fff;margin:4px}
+.network-viz{background:var(--sf-white);border-radius:var(--radius);border:1px solid var(--sf-border);padding:20px;height:300px;position:relative;overflow:hidden}
+.network-node{position:absolute;width:10px;height:10px;border-radius:50%;transition:all 2s}
+.network-line{position:absolute;height:1px;transform-origin:left center;opacity:.3}
+.page{display:none}.page.active{display:block}
+footer{text-align:center;padding:20px;color:var(--sf-gray);font-size:12px;border-top:1px solid var(--sf-border);margin-top:20px}
+.typing-indicator{display:flex;gap:4px;padding:8px 14px;align-self:flex-start}
+.typing-indicator span{width:6px;height:6px;background:var(--sf-gray);border-radius:50%;animation:typing 1.4s infinite}
+.typing-indicator span:nth-child(2){animation-delay:.2s}
+.typing-indicator span:nth-child(3){animation-delay:.4s}
+@keyframes typing{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+/* Config IA Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center}.modal-overlay.open{display:flex}
+.modal-box{background:#fff;border-radius:var(--radius);padding:28px;width:540px;max-width:96vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-box h2{font-size:18px;font-weight:700;margin-bottom:4px}.modal-box .modal-sub{font-size:13px;color:var(--sf-gray);margin-bottom:20px}
+.key-row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:10px;align-items:center}
+.key-row input{padding:8px 12px;border:1px solid var(--sf-border);border-radius:8px;font-size:13px;outline:none;width:100%}.key-row input:focus{border-color:var(--sf-blue)}
+.key-row .toggle-btn{background:none;border:1px solid var(--sf-border);border-radius:8px;padding:8px 10px;cursor:pointer;font-size:14px;white-space:nowrap}
+.modal-actions{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
+.btn-primary{background:var(--sf-blue);color:#fff;border:none;padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600}
+.btn-secondary{background:none;border:1px solid var(--sf-border);padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px}
+.btn-danger-outline{background:none;border:1px solid var(--sf-red);color:var(--sf-red);padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px}
+/* Security Alert Banner */
+.security-alert{background:var(--sf-red);color:#fff;padding:12px 24px;display:none;align-items:center;gap:12px;position:sticky;top:56px;z-index:98}
+.security-alert.visible{display:flex}.security-alert .alert-icon{font-size:20px;flex-shrink:0}
+.security-alert .alert-body{flex:1}.security-alert .alert-title{font-weight:700;font-size:14px}.security-alert .alert-msg{font-size:12px;opacity:.9;margin-top:2px}
+.security-alert .alert-close{background:none;border:1px solid rgba(255,255,255,.5);color:#fff;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:12px;white-space:nowrap}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
-  <div class="card">
-    <h1>Agentes IA – Toca da Onça</h1>
-    <p>O site está em manutenção. A interface principal será restaurada em seguida.</p>
-    <p>Se você estiver no Vercel, verifique o deploy e depois volte aqui.</p>
+<div class="topbar">
+  <div class="logo"><div class="icon">&#128025;</div>Toca da Onca Agentforce</div>
+  <nav>
+    <button class="active" onclick="showPage(event,'overview')">Overview</button>
+    <button onclick="showPage(event,'agents')">Agentes</button>
+    <button onclick="showPage(event,'performance')">Performance</button>
+    <button onclick="showPage(event,'network')">Rede Neural</button>
+    <button onclick="showPage(event,'squads')">Esquadras</button>
+    <button onclick="openConfigIA()">&#9881; Config IA</button>
+  </nav>
+  <div class="status-badge">
+    <div class="pulse"></div>
+    <span id="pool-status">1000 Agentes Ativos</span>
   </div>
+</div>
+
+<!-- Security Alert Banner -->
+<div class="security-alert" id="security-alert">
+  <div class="alert-icon">&#128274;</div>
+  <div class="alert-body">
+    <div class="alert-title" id="security-alert-title">Alerta de Segurança</div>
+    <div class="alert-msg" id="security-alert-msg"></div>
+  </div>
+  <button class="alert-close" onclick="clearSecurityAlert()">Dispensar</button>
+</div>
+
+<!-- Config IA Modal -->
+<div class="modal-overlay" id="config-ia-modal" onclick="if(event.target===this)fecharConfigIA()">
+  <div class="modal-box">
+    <h2>&#9881; Config IA — Chaves Gemini</h2>
+    <p class="modal-sub">Suas chaves ficam <strong>apenas no localStorage</strong> do navegador e nunca são enviadas ao GitHub.</p>
+    <div id="config-prod-warning" style="display:none;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#856404">
+      ⚠️ <strong>Modo Produção (apenas dev):</strong> Em produção as chaves são gerenciadas pelo servidor Vercel (/api/gemini). Chaves inseridas aqui são ignoradas.
+    </div>
+    <div id="key-rows"></div>
+    <div class="modal-actions">
+      <button class="btn-danger-outline" onclick="limparChavesModal()">Limpar</button>
+      <button class="btn-secondary" onclick="fecharConfigIA()">Fechar</button>
+      <button class="btn-primary" onclick="salvarChavesModal()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>&#129302; Agentforce - Toca da Onca</h1>
+  <p>Plataforma de Inteligência Artificial com 1002 agentes autônomos trabalhando em tempo real para sua empresa.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="num" id="hero-active">1000</div><div class="lbl">Agentes Ativos</div></div>
+    <div class="stat"><div class="num" id="hero-tasks">0</div><div class="lbl">Tarefas Hoje</div></div>
+    <div class="stat"><div class="num" id="hero-conv">0</div><div class="lbl">Conversas Ativas</div></div>
+    <div class="stat"><div class="num" id="hero-acc">99.7%</div><div class="lbl">Precisao</div></div>
+  </div>
+</div>
+
+<div class="main">
+  <div id="page-overview" class="page active">
+    <div class="kpi-bar" id="kpi-bar"></div>
+    <div class="section-title">&#128172; Agentes Trabalhando Agora <span class="badge" id="working-count">0</span></div>
+    <div class="agents-grid" id="agents-overview"></div>
+    <div class="section-title">&#128196; Feed de Atividades em Tempo Real</div>
+    <div class="activity-feed" id="activity-feed"></div>
+  </div>
+
+  <div id="page-agents" class="page">
+    <div class="section-title">&#129302; Todos os 1002 Agentes <span class="badge">1002 Online</span></div>
+    <div class="agents-grid" id="agents-full"></div>
+  </div>
+
+  <div id="page-performance" class="page">
+    <div class="kpi-bar" id="perf-kpis"></div>
+    <div class="section-title">&#128200; Metricas de Performance por Esquadra</div>
+    <div class="two-col" id="perf-details"></div>
+  </div>
+
+  <div id="page-network" class="page">
+    <div class="section-title">&#129504; Rede Neural de Comunicacao entre Agentes</div>
+    <div class="network-viz" id="network-viz"></div>
+    <div class="section-title" style="margin-top:24px">&#128257; Comunicacoes Recentes</div>
+    <div class="activity-feed" id="network-feed"></div>
+  </div>
+
+  <div id="page-squads" class="page">
+    <div class="section-title">&#127941; Esquadras de Agentes</div>
+    <div id="squads-container"></div>
+  </div>
+</div>
+
+<div class="chat-panel" id="chat-panel">
+  <div class="chat-header">
+    <div class="avatar" id="chat-avatar" style="width:40px;height:40px;font-size:18px"></div>
+    <div>
+      <div id="chat-agent-name" style="font-weight:700"></div>
+      <div id="chat-agent-role" style="font-size:12px;opacity:.7"></div>
+      <div id="chat-account" style="font-size:11px;opacity:.75;margin-top:2px"></div>
+    </div>
+    <button class="close-btn" onclick="closeChat()">&#10005;</button>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input">
+    <input type="text" id="chat-input-field" placeholder="Enviar comando ao agente..." onkeypress="if(event.key==='Enter')sendChat()">
+    <button onclick="sendChat()">&#10148;</button>
+  </div>
+</div>
+
+<footer>Toca da Onca Modas &copy; 2026 - Agentforce Platform - 1000 Agentes IA Autonomos</footer>
+
+<script>
+
+// ============================================================
+// SUPABASE - Banco de Dados em Tempo Real
+// ============================================================
+const SUPABASE_URL = 'https://tlzehxzgpihartdlqmnk.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_schhC7wxoVoj3X5NFMyRDA_4rlTOspO';
+let sb = null;
+async function initSupabase(){try{if(typeof window.supabase!=='undefined'){sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);console.log('Supabase OK - Toca da Onca IA');return true;}}catch(e){console.warn('Supabase:',e.message);}return false;}
+async function sbSalvarConversa(code,tel,plat){if(!sb)return null;try{const{data,error}=await sb.from('conversas').insert({agente_code:code,cliente_telefone:tel||'web-'+Date.now(),plataforma:plat||'dashboard',session_id:crypto.randomUUID(),status:'ativa'}).select().single();if(error)throw error;return data;}catch(e){console.warn('sbConv:',e.message);return null;}}
+async function sbSalvarMensagem(id,papel,txt,ms){
+  if(!sb||!id)return null;
+  const maxLen=(typeof CONFIG!=='undefined'&&CONFIG.MAX_MSG_LEN)||4000;
+  const safeTxt=String(txt||'').substring(0,maxLen);
+  if(!safeTxt.trim())return null;
+  try{const{data,error}=await sb.from('mensagens').insert([{conversa_id:id,papel:papel,conteudo:safeTxt,tokens_usados:ms||0}]).select().single();if(error)throw error;return data;}
+  catch(e){console.error('[sbSalvarMensagem]',e.message);return null;}
+}
+async function sbAtualizarAgente(code,campos){if(!sb)return;try{await sb.from('agentes').upsert({agent_code:code,...campos});}catch(e){}}
+async function sbLog(nivel,code,evento,det){
+  if(!sb||(typeof CONFIG!=='undefined'&&!CONFIG.ENABLE_SUPABASE_LOGGING))return null;
+  try{await sb.from('logs_sistema').insert([{nivel:nivel,agente_code:code,evento:String(evento||'').substring(0,200),detalhes:String(det||'').substring(0,1000)}]);}
+  catch(e){}return null;
+}
+window.addEventListener('load',()=>{initSupabase();});
+
+/* =========================
+   CONFIG (endpoints e modo)
+========================= */
+const CONFIG={
+  PRODUCTION:true,
+  ALLOW_CLIENT_KEYS:true,
+  ENABLE_SUPABASE_LOGGING:true,
+  MAX_MSG_LEN:4000,
+  SEARCH_ENDPOINT:'/api/search',
+  LOGIN_ENDPOINT:'/api/login/start',
+  TELEGRAM_NOTIFY_ENDPOINT:'/api/notify/telegram',
+  GEMINI_ENDPOINT:'/api/gemini',
+  GEMINI_MODE:'auto'
+};
+
+function escapeHtml(str){
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* =========================
+   DADOS ORIGINAIS (mantidos)
+========================= */
+const SQUADS=[
+  {name:'Vendas & CRM',color:'#0176d3',icon:'&#128176;',count:150,desc:'Prospeccao, qualificacao de leads, follow-up automatico'},
+  {name:'Atendimento',color:'#2e844a',icon:'&#128172;',count:200,desc:'SAC multicanal, resolucao de tickets, satisfacao'},
+  {name:'Marketing Digital',color:'#9050e9',icon:'&#128227;',count:120,desc:'Campanhas, SEO, redes sociais, analytics'},
+  {name:'Estoque & Logistica',color:'#fe9339',icon:'&#128230;',count:130,desc:'Controle de estoque, entregas, fornecedores'},
+  {name:'Financeiro',color:'#ea001e',icon:'&#128181;',count:100,desc:'Faturamento, contas, fluxo de caixa, DRE'},
+  {name:'Analytics & BI',color:'#00a1e0',icon:'&#128202;',count:80,desc:'Dashboards, relatorios, previsoes de mercado'},
+  {name:'Self-Learning',color:'#ff5d2d',icon:'&#129504;',count:70,desc:'Treinamento continuo, otimizacao de modelos'},
+  {name:'Seguranca',color:'#032d60',icon:'&#128274;',count:50,desc:'Firewall IA, deteccao de fraude, compliance'},
+  {name:'Integracao',color:'#1b96ff',icon:'&#128279;',count:60,desc:'APIs, webhooks, conectores, sincronizacao'},
+  {name:'Automacao',color:'#c23934',icon:'&#9881;',count:40,desc:'Workflows, triggers, processos automaticos'}
+];
+
+const AGENT_NAMES=['Luna','Atlas','Nova','Phoenix','Orion','Stella','Titan','Aria','Zeus','Vega','Neo','Iris','Max','Aurora','Leo','Maya','Rex','Sage','Kai','Jade','Echo','Bolt','Cleo','Drake','Ember','Flux','Gaia','Halo','Ion','Jazz','Knox','Lyra','Milo','Nyx','Otto','Pax','Quinn','Ryu','Sol','Tara','Uma','Vale','Wren','Xara','Yuri','Zara','Apex','Byte','Crux','Dusk','Eon','Fern','Grit','Hawk','Ivy','Jolt','Kira','Link','Mars','Neon'];
+
+const TASKS=[
+  'Analisando tendencias de moda primavera 2026',
+  'Processando pedido #'+Math.floor(Math.random()*9000+1000),
+  'Otimizando campanha Instagram Reels',
+  'Respondendo cliente via WhatsApp',
+  'Atualizando precos no catalogo online',
+  'Gerando relatorio de vendas semanal',
+  'Classificando leads por score de compra',
+  'Monitorando concorrentes online',
+  'Processando devolucao #'+Math.floor(Math.random()*900+100),
+  'Sincronizando estoque com marketplace',
+  'Criando post para feed do Instagram',
+  'Analisando sentimento de reviews',
+  'Calculando margem de lucro por categoria',
+  'Otimizando rota de entrega',
+  'Detectando padrao de fraude em transacao',
+  'Treinando modelo de recomendacao',
+  'Gerando previsao de demanda mensal',
+  'Atualizando CRM com novos contatos',
+  'Processando pagamento via PIX',
+  'Enviando email marketing segmentado',
+  'Analisando metricas de conversao',
+  'Configurando chatbot para Black Friday',
+  'Integrando API do Mercado Livre',
+  'Realizando backup de dados criticos',
+  'Otimizando SEO da loja virtual'
+];
+
+const CONVERSATIONS={
+  vendas:['Identifiquei 23 leads quentes no pipeline','Lead Maria Silva abriu email 3x - recomendo contato direto','Preparando proposta personalizada para cliente VIP','Score do lead atualizado: 87/100 - alta probabilidade','Agendei follow-up automatico para amanha 10h'],
+  atendimento:['Ticket #4521 resolvido - tempo medio: 2min 34s','Cliente satisfeito - NPS 9/10 registrado','Encaminhando caso complexo para supervisor humano','Padrao detectado: 15 clientes perguntando sobre troca','Resposta automatica enviada em 800ms'],
+  marketing:['CTR da campanha subiu 34% apos otimizacao A/B','Post agendado para 18h - horario de pico de engajamento','Relatorio de ROI: campanha gerando 5.2x retorno','Hashtags otimizadas baseadas em trending topics','Detectei oportunidade de parceria com influencer'],
+  estoque:['Alerta: estoque de camisetas P abaixo do minimo','Pedido automatico enviado ao fornecedor #FL-2847','Previsao: demanda de vestidos +40% proximo mes','Rota de entrega otimizada - economia de 22% em frete','12 produtos novos catalogados com sucesso'],
+  financeiro:['Fluxo de caixa positivo: +R$47.300 hoje','DRE mensal finalizado - margem liquida 18.5%','Boleto vencido detectado - cobranca automatica enviada','Previsao de receita Q2: R$1.2M (+15% vs Q1)','Conciliacao bancaria 100% automatizada hoje']
+};
+
+/* =========================
+   MULTICONTAS + GESTOR
+========================= */
+// Pool de 5 Contas (Google Cloud / Gemini)
+const API_KEYS_POOL = [
+  { key: 'SUA_CHAVE_1', email: 'conta1@gmail.com', status: 'active' },
+  { key: 'SUA_CHAVE_2', email: 'conta2@gmail.com', status: 'active' },
+  { key: 'SUA_CHAVE_3', email: 'conta3@gmail.com', status: 'active' },
+  { key: 'SUA_CHAVE_4', email: 'conta4@gmail.com', status: 'active' },
+  { key: 'SUA_CHAVE_5', email: 'conta5@gmail.com', status: 'active' }
+];
+let currentKeyIndex = 0;
+
+/* ---- localStorage key config ---- */
+const LOCALSTORAGE_KEYS_KEY = 'TOCADAONCA_GEMINI_KEYS_V1';
+
+function loadKeysFromLocalStorage(){
+  try{
+    const stored = localStorage.getItem(LOCALSTORAGE_KEYS_KEY);
+    if(!stored) return;
+    const parsed = JSON.parse(stored);
+    if(!Array.isArray(parsed)) return;
+    parsed.forEach((item,i)=>{
+      if(i < API_KEYS_POOL.length){
+        if(item.email) API_KEYS_POOL[i].email = item.email;
+        if(item.key)   API_KEYS_POOL[i].key   = item.key;
+      }
+    });
+  }catch(e){console.warn('loadKeysFromLocalStorage error',e);}
+}
+
+function openConfigIA(){
+  buildKeyRows();
+  const pwarn=document.getElementById('config-prod-warning');
+  if(pwarn) pwarn.style.display=CONFIG.PRODUCTION?'':'none';
+  const keyRows=document.getElementById('key-rows');
+  if(keyRows) keyRows.style.display=CONFIG.PRODUCTION?'none':'';
+  document.getElementById('config-ia-modal').classList.add('open');
+}
+
+function fecharConfigIA(){
+  document.getElementById('config-ia-modal').classList.remove('open');
+}
+
+function buildKeyRows(){
+  const container = document.getElementById('key-rows');
+  container.innerHTML = '';
+  API_KEYS_POOL.forEach((c,i)=>{
+    const rowId = 'key-row-'+i;
+    const div = document.createElement('div');
+    div.className = 'key-row';
+    div.innerHTML =
+      '<input type="text" id="email-'+i+'" placeholder="email / label" value="'+escapeHtml(c.email)+'">' +
+      '<input type="password" id="apikey-'+i+'" placeholder="API Key '+(i+1)+'" value="'+escapeHtml(c.key.startsWith('SUA_CHAVE') ? '' : c.key)+'">' +
+      '<button class="toggle-btn" onclick="toggleKeyVisibility('+i+')">&#128065;</button>';
+    container.appendChild(div);
+  });
+}
+
+function toggleKeyVisibility(i){
+  const inp = document.getElementById('apikey-'+i);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function salvarChavesModal(){
+  if(CONFIG.PRODUCTION){
+    alert('⚠️ Modo Produção: chaves ignoradas. Configure GEMINI_API_KEY no servidor.');
+    fecharConfigIA();
+    return;
+  }
+  const data = API_KEYS_POOL.map((_,i)=>({
+    email: (document.getElementById('email-'+i)||{}).value || API_KEYS_POOL[i].email,
+    key:   (document.getElementById('apikey-'+i)||{}).value || ''
+  }));
+  data.forEach((item,i)=>{
+    API_KEYS_POOL[i].email = item.email;
+    if(item.key) API_KEYS_POOL[i].key = item.key;
+    API_KEYS_POOL[i].status = 'active';
+  });
+  try{ localStorage.setItem(LOCALSTORAGE_KEYS_KEY, JSON.stringify(data)); }catch(e){console.warn(e);}
+  atualizarStatusPoolUI();
+  fecharConfigIA();
+}
+
+function limparChavesModal(){
+  if(!confirm('Limpar todas as chaves salvas no localStorage?')) return;
+  API_KEYS_POOL.forEach((c,i)=>{ c.key='SUA_CHAVE_'+(i+1); c.status='active'; });
+  try{ localStorage.removeItem(LOCALSTORAGE_KEYS_KEY); }catch(e){}
+  buildKeyRows();
+  atualizarStatusPoolUI();
+}
+
+function getContaAtualPreferida(){
+  // tenta achar a próxima conta "active" com chave real
+  for(let i=0;i<API_KEYS_POOL.length;i++){
+    const idx = (currentKeyIndex + i) % API_KEYS_POOL.length;
+    const c = API_KEYS_POOL[idx];
+    const temChaveReal = c.key && !c.key.includes('SUA_CHAVE');
+    if(c.status === 'active' && temChaveReal){
+      currentKeyIndex = idx;
+      return c;
+    }
+  }
+  // fallback (para dar erro explicando que falta chave)
+  return API_KEYS_POOL[currentKeyIndex];
+}
+
+function atualizarStatusPoolUI(){
+  const active = API_KEYS_POOL.filter(c=>c.status==='active').length;
+  const exhausted = API_KEYS_POOL.filter(c=>c.status==='exhausted').length;
+  const current = API_KEYS_POOL[currentKeyIndex];
+  const temChaveReal = API_KEYS_POOL.some(c=>c.key && !c.key.startsWith('SUA_CHAVE'));
+  const el = document.getElementById('pool-status');
+  if(el){
+    if(CONFIG.PRODUCTION){
+      el.textContent = '1002 Agentes Ativos | Backend /api/gemini';
+    } else if(!temChaveReal){
+      el.textContent = '⚠️ Nenhuma chave Gemini real configurada — clique em Config IA';
+    } else {
+      el.textContent = `1002 Agentes Ativos | Contas: ${active} ativas / ${exhausted} esgotadas | Em uso: ${current.email}`;
+    }
+  }
+}
+
+function criarErroHttp(status, statusText, bodyText){
+  const e = new Error(`${status} ${statusText}${bodyText ? ' - ' + bodyText : ''}`);
+  e.status = status;
+  return e;
+}
+
+async function chamarGemini(payload, apiKey){
+  if(!apiKey || apiKey.includes('SUA_CHAVE')){
+    throw new Error('API KEY não configurada. Troque SUA_CHAVE_1...5 pelas suas chaves reais.');
+  }
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+  const resp = await fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  });
+
+  if(!resp.ok){
+    let bodyText = '';
+    try{ bodyText = await resp.text(); }catch{}
+    throw criarErroHttp(resp.status, resp.statusText, bodyText);
+  }
+
+  const data = await resp.json();
+  const text = data?.candidates?.[0]?.content?.parts?.map(p=>p?.text ?? '').join('') ?? '';
+  if(!text.trim()) throw new Error('Resposta vazia do Gemini.');
+  return text;
+}
+
+// Robô Gestor de Créditos (Troca de conta automática)
+async function chamarGeminiViaBackend(payload){
+  const resp=await fetch(CONFIG.GEMINI_ENDPOINT,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  });
+  if(!resp.ok) throw new Error('Backend Gemini HTTP '+resp.status);
+  const data=await resp.json();
+  const t=data?.text??data?.candidates?.[0]?.content?.parts?.map(p=>p?.text??'').join('')??'';
+  if(!t.trim()) throw new Error('Resposta vazia do backend Gemini.');
+  return t;
+}
+
+async function webSearch(query){
+  try{
+    const resp=await fetch(CONFIG.SEARCH_ENDPOINT,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({q:query})
+    });
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    return await resp.json();
+  }catch(e){
+    return {error:'Busca web precisa de backend em /api/search; ainda não configurado.'};
+  }
+}
+
+async function startLoginFlow({site, accountRef}){
+  try{
+    const resp=await fetch(CONFIG.LOGIN_ENDPOINT,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({site, accountRef})
+    });
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    return await resp.json();
+  }catch(e){
+    return {error:'Backend de login precisa de backend em /api/login/start; ainda não configurado.'};
+  }
+}
+
+async function notifyTelegram(message){
+  try{
+    const resp=await fetch(CONFIG.TELEGRAM_NOTIFY_ENDPOINT,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message})
+    });
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    return await resp.json();
+  }catch(e){
+    return {error:'Notificação Telegram precisa de backend em /api/notify/telegram; ainda não configurado.'};
+  }
+}
+
+function raiseSecurityAlert({title, message, account}){
+  const banner = document.getElementById('security-alert');
+  if(!banner) return;
+  document.getElementById('security-alert-title').textContent = title || 'Alerta de Segurança';
+  document.getElementById('security-alert-msg').textContent = (account ? '['+account+'] ' : '') + (message || '');
+  banner.classList.add('visible');
+}
+
+function clearSecurityAlert(){
+  const banner = document.getElementById('security-alert');
+  if(banner) banner.classList.remove('visible');
+}
+
+async function chamarGeminiResiliente(payload) {
+  if(CONFIG.PRODUCTION||CONFIG.GEMINI_MODE==='auto'){
+    try{
+      const text=await chamarGeminiViaBackend(payload);
+      return {text,usedAccount:{email:'backend(/api/gemini)'}};
+    }catch(e){
+      if(CONFIG.PRODUCTION) throw new Error('Gemini backend indisponível. Configure GEMINI_API_KEY no servidor.');
+      console.warn('[DEV] Backend Gemini indisponível, usando chave direta.',e.message);
+    }
+  }
+  let tentativas = 0;
+  while (tentativas < API_KEYS_POOL.length) {
+    const contaAtual = getContaAtualPreferida();
+    atualizarStatusPoolUI();
+
+    try {
+      const text = await chamarGemini(payload, contaAtual.key);
+      return { text, usedAccount: contaAtual };
+    } catch (err) {
+      const msg = String(err?.message ?? err);
+      if (msg.includes('429') || msg.toLowerCase().includes('quota') || msg.toLowerCase().includes('rate')) {
+        console.warn(`Conta ${contaAtual.email} esgotada. Pulando para a próxima...`);
+        contaAtual.status = 'exhausted';
+        currentKeyIndex = (currentKeyIndex + 1) % API_KEYS_POOL.length;
+        tentativas++;
+      } else {
+        throw err;
+      }
+    }
+  }
+  throw new Error('Todas as 5 contas atingiram o limite de créditos gratuitos.');
+}
+
+/* =========================
+   ESTADO DO APP
+========================= */
+let agents=[];
+let tasksToday=0;
+let activeConvs=0;
+let chatAgent=null;
+let feedSeq=0;
+let networkAnimInterval=null;
+let networkFeedInterval=null;
+
+function initAgents(){
+  agents=[];
+  // Agente 0000: Santo Gabriel — Supervisor Supremo
+  agents.push({
+    id:0,
+    name:'SantoGabriel-0000',
+    squad:'Supervisor Supremo',
+    squadColor:'#d4af37',
+    squadIcon:'&#11088;',
+    avatar:'G',
+    status:'online',
+    currentTask:'Supervisionando e auditando os 1000 agentes em tempo real',
+    tasksCompleted:9999,
+    accuracy:'100.0',
+    responseTime:'0.1s',
+    conversations:0,
+    lastAction:Date.now(),
+    boundAccountEmail:'supervisor@tocadaonca.ia'
+  });
+  // Agente 0001: Busca-0001 — Buscas & Login
+  agents.push({
+    id:1,
+    name:'Busca-0001',
+    squad:'Buscas & Login',
+    squadColor:'#1b96ff',
+    squadIcon:'&#128269;',
+    specialty:'web_search_login',
+    avatar:'B',
+    status:'online',
+    currentTask:'Aguardando comandos de busca e login',
+    tasksCompleted:0,
+    accuracy:'99.5',
+    responseTime:'0.5s',
+    conversations:0,
+    lastAction:Date.now(),
+    boundAccountEmail: API_KEYS_POOL[1 % API_KEYS_POOL.length].email
+  });
+  for(let i=0;i<1000;i++){
+    const sq=SQUADS[i%SQUADS.length];
+    const nm=AGENT_NAMES[i%AGENT_NAMES.length];
+    agents.push({
+      id:i+2,
+      name:nm+'-'+(i+2).toString().padStart(4,'0'),
+      squad:sq.name,
+      squadColor:sq.color,
+      squadIcon:sq.icon,
+      avatar:nm[0],
+      status:Math.random()>.05?'online':'busy',
+      currentTask:TASKS[Math.floor(Math.random()*TASKS.length)],
+      tasksCompleted:Math.floor(Math.random()*50+10),
+      accuracy:(95+Math.random()*5).toFixed(1),
+      responseTime:(Math.random()*2+0.3).toFixed(1)+'s',
+      conversations:Math.floor(Math.random()*20),
+      lastAction:Date.now()-Math.floor(Math.random()*120000),
+      boundAccountEmail: API_KEYS_POOL[i % API_KEYS_POOL.length].email
+    });
+  }
+  tasksToday=Math.floor(Math.random()*5000+15000);
+  activeConvs=Math.floor(Math.random()*200+300);
+}
+
+function renderKPIs() {
+  const today = new Date(new Date().setHours(0,0,0,0)).toISOString();
+  const draw = (t,c,a,r,rv,s) => {
+    document.getElementById('kpi-bar').innerHTML = [
+      {icon:'',value:t,label:'Tarefas Completadas Hoje',change:'+real',dir:'up'},
+      {icon:'',value:c,label:'Conversas Ativas Agora',change:'+real',dir:'up'},
+      {icon:'',value:a,label:'Taxa de Precisao',change:'IA',dir:'up'},
+      {icon:'',value:r,label:'Tempo Medio Resposta',change:'ms',dir:'up'},
+      {icon:'',value:rv,label:'Receita Gerada por IA',change:'R$',dir:'up'},
+      {icon:'',value:s,label:'Satisfacao do Cliente',change:'/5',dir:'up'},
+    ].map(k=>'<div class="kpi-card"><div class="kpi-icon">'+k.icon+'</div><div class="kpi-value">'+k.value+'</div><div class="kpi-label">'+k.label+'</div><div class="kpi-change '+k.dir+'">'+k.change+'</div></div>').join('');
+  };
+  if (sb) {
+    Promise.all([
+      sb.from('mensagens').select('id',{count:'exact',head:true}).gte('criado_em',today),
+      sb.from('conversas').select('id',{count:'exact',head:true}).eq('status','ativa'),
+      sb.from('agentes').select('taxa_precisao').limit(200),
+      sb.from('pedidos').select('valor_total').gte('criado_em',today)
+    ]).then(([msgs,convs,agts,peds])=>{
+      const tT = (msgs.count||tasksToday).toLocaleString('pt-BR');
+      const cC = (convs.count||activeConvs).toLocaleString('pt-BR');
+      const prec = agts.data?.length ? (agts.data.reduce((s,a)=>s+(a.taxa_precisao||99.5),0)/agts.data.length).toFixed(1)+'%' : '99.5%';
+      const rev = peds.data?.reduce((s,p)=>s+(p.valor_total||0),0)||0;
+      const revStr = rev > 0 ? 'R$'+Math.round(rev/1000)+'K' : 'R$0';
+      draw(tT, cC, prec, '0.8s', revStr, '4.9/5');
+    }).catch(()=>draw(tasksToday.toLocaleString('pt-BR'),activeConvs.toLocaleString('pt-BR'),'99.5%','0.8s','R$0','4.9/5'));
+  } else {
+    draw(tasksToday.toLocaleString('pt-BR'),activeConvs.toLocaleString('pt-BR'),'99.7%','0.8s','R$127K','4.9/5');
+  }
+}
+
+function renderAgentCard(a){
+  return`<div class="agent-card" onclick="openChat(${a.id})">
+  <div class="card-header">
+  <div class="avatar" style="background:${a.squadColor}">${a.avatar}<div class="status-dot ${a.status}"></div></div>
+  <div class="info"><h3>${a.name}</h3><div class="role">${a.squad}</div><div class="squad">${a.squadIcon} Esquadra ${a.squad}</div></div>
+  </div>
+  <div class="card-body">
+  <div class="task-current"><div class="spinner"></div>${a.currentTask}</div>
+  <div class="metrics-row">
+  <div><div class="val">${a.tasksCompleted}</div>tarefas</div>
+  <div><div class="val">${a.accuracy}%</div>precisao</div>
+  <div><div class="val">${a.responseTime}</div>resposta</div>
+  </div>
+  </div>
+  <div class="card-footer">
+  <button onclick="event.stopPropagation();openChat(${a.id})">&#128172; Chat</button>
+  <button onclick="event.stopPropagation()">&#128202; Metricas</button>
+  <button onclick="event.stopPropagation()">&#128196; Logs</button>
+  </div>
+  </div>`;
+}
+
+function renderOverview(){
+  const top=agents.filter((_,i)=>i<12);
+  document.getElementById('agents-overview').innerHTML=top.map(a=>renderAgentCard(a)).join('');
+  document.getElementById('working-count').textContent=agents.filter(a=>a.status==='online').length;
+}
+
+function renderAllAgents(){
+  const container=document.getElementById('agents-full');
+  if(!container.children.length){
+    container.innerHTML=agents.filter((_,i)=>i<60).map(a=>renderAgentCard(a)).join('');
+  }
+}
+
+function renderPerformance(){
+  const kpis=[
+    {icon:'&#128200;',value:'99.97%',label:'Uptime do Sistema',change:'+0.02%',dir:'up'},
+    {icon:'&#128171;',value:'847ms',label:'Latencia Media',change:'-12%',dir:'up'},
+    {icon:'&#129504;',value:'2.4TB',label:'Dados Processados Hoje',change:'+18%',dir:'up'},
+    {icon:'&#128274;',value:'0',label:'Incidentes de Seguranca',change:'0%',dir:'up'}
+  ];
+  document.getElementById('perf-kpis').innerHTML=kpis.map(k=>`<div class="kpi-card"><div class="kpi-icon">${k.icon}</div><div class="kpi-value">${k.value}</div><div class="kpi-label">${k.label}</div><div class="kpi-change ${k.dir}">${k.change}</div></div>`).join('');
+  document.getElementById('perf-details').innerHTML=SQUADS.map(sq=>{
+    const pct=Math.floor(85+Math.random()*15);
+    return`<div class="squad-section"><h3 style="margin-bottom:12px">${sq.icon} ${sq.name} <span style="font-size:13px;color:var(--sf-gray)">(${sq.count} agentes)</span></h3>
+    <p style="font-size:13px;color:var(--sf-gray);margin-bottom:12px">${sq.desc}</p>
+    <div style="display:flex;justify-content:space-between;font-size:13px"><span>Eficiencia</span><span style="font-weight:700">${pct}%</span></div>
+    <div class="progress-bar"><div class="fill" style="width:${pct}%;background:${sq.color}"></div></div>
+    <div style="margin-top:12px;display:flex;gap:16px;font-size:12px;color:var(--sf-gray)">
+    <span>Tarefas: <strong>${Math.floor(Math.random()*2000+500)}</strong></span>
+    <span>Tempo: <strong>${(Math.random()*2+.5).toFixed(1)}s</strong></span>
+    <span>Precisao: <strong>${(95+Math.random()*5).toFixed(1)}%</strong></span>
+    </div></div>`;
+  }).join('');
+}
+
+function renderNetwork(){
+  const viz=document.getElementById('network-viz');
+  viz.innerHTML='';
+  for(let i=0;i<40;i++){
+    const node=document.createElement('div');
+    node.className='network-node';
+    const sq=SQUADS[i%SQUADS.length];
+    node.style.cssText=`left:${Math.random()*90+5}%;top:${Math.random()*85+5}%;background:${sq.color};box-shadow:0 0 8px ${sq.color}`;
+    viz.appendChild(node);
+  }
+  clearInterval(networkAnimInterval);
+  networkAnimInterval=setInterval(()=>{if(document.hidden)return;
+    
+    viz.querySelectorAll('.network-node').forEach(n=>{
+      n.style.left=Math.random()*90+5+'%';
+      n.style.top=Math.random()*85+5+'%';
+      n.style.transform=`scale(${.8+Math.random()*.8})`;
+    });
+  },3000);
+  const feed=document.getElementById('network-feed');
+  clearInterval(networkFeedInterval);
+  networkFeedInterval=setInterval(()=>{if(document.hidden)return;
+    
+    const a1=agents[Math.floor(Math.random()*agents.length)];
+    const a2=agents[Math.floor(Math.random()*agents.length)];
+    const msgs=['compartilhou insight de dados','solicitou colaboracao em tarefa','enviou alerta de prioridade','sincronizou modelo atualizado','reportou anomalia detectada'];
+    const html=`<div class="feed-item"><div class="feed-avatar" style="background:${a1.squadColor}">${a1.avatar}</div><div><div class="feed-text"><strong>${a1.name}</strong> ${msgs[Math.floor(Math.random()*msgs.length)]} com <strong>${a2.name}</strong></div><div class="feed-time">agora mesmo</div></div></div>`;
+    feed.insertAdjacentHTML('afterbegin',html);
+    if(feed.children.length>15)feed.removeChild(feed.lastChild);
+  },4000);
+}
+
+function renderSquads(){
+  document.getElementById('squads-container').innerHTML=SQUADS.map(sq=>{
+    const sqAgents=agents.filter(a=>a.squad===sq.name).slice(0,6);
+    return`<div class="squad-section" style="margin-bottom:20px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+    <span class="squad-tag" style="background:${sq.color};font-size:16px;padding:8px 16px">${sq.icon} ${sq.name}</span>
+    <span style="font-size:14px;color:var(--sf-gray)">${sq.count} agentes ativos</span>
+    </div>
+    <p style="font-size:13px;color:var(--sf-gray);margin-bottom:16px">${sq.desc}</p>
+    <div class="agents-grid">${sqAgents.map(a=>renderAgentCard(a)).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+/* =========================
+   AGENTE CRIADOR DE INSTÂNCIAS
+========================= */
+function agenteCriadorContas(qtd=1){
+  for(let n=0;n<qtd;n++){
+    const id = agents.length;
+    const sq=SQUADS[id%SQUADS.length];
+    const nm=AGENT_NAMES[id%AGENT_NAMES.length];
+    const pool = API_KEYS_POOL[id % API_KEYS_POOL.length];
+
+    agents.push({
+      id,
+      name:nm+'-'+(id+1).toString().padStart(4,'0'),
+      squad:sq.name,
+      squadColor:sq.color,
+      squadIcon:sq.icon,
+      avatar:nm[0],
+      status:'online',
+      currentTask:'Provisionando nova instância e conectando ao pool...',
+      tasksCompleted:0,
+      accuracy:(96+Math.random()*4).toFixed(1),
+      responseTime:(Math.random()*1.5+0.3).toFixed(1)+'s',
+      conversations:0,
+      lastAction:Date.now(),
+      boundAccountEmail: pool.email
+    });
+
+    addFeedItem({
+      agentName: agents[id].name,
+      agentAvatar: agents[id].avatar,
+      agentColor: agents[id].squadColor,
+      action: 'criou nova instância',
+      detail: `Vinculada à conta ${pool.email} (status: ${pool.status})`
+    });
+  }
+
+  // atualiza os cards do overview e contadores
+  document.getElementById('hero-active').textContent = agents.length.toLocaleString();
+  renderOverview();
+}
+
+/* =========================
+   SANTO GABRIEL — SUPERVISOR
+========================= */
+function auditarSistema(){
+  const regular=agents.filter(a=>a.id>0);
+  const online=regular.filter(a=>a.status==='online').length;
+  const busy=regular.filter(a=>a.status==='busy').length;
+  const squadBusy={};
+  regular.forEach(a=>{if(a.status==='busy')squadBusy[a.squad]=(squadBusy[a.squad]||0)+1;});
+  const topBusy=Object.entries(squadBusy).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([s,c])=>s+'('+c+')').join(', ')||'nenhuma';
+  const activeAcc=API_KEYS_POOL.filter(c=>c.status==='active').length;
+  const exhaustedAcc=API_KEYS_POOL.filter(c=>c.status==='exhausted').length;
+  const aboveThousand=agents.filter(a=>a.id>1000).length;
+  return '📊 Resumo do Sistema:\n- Agentes regulares: '+regular.length+'\n- Online: '+online+' | Busy: '+busy+'\n- Squads mais ocupadas: '+topBusy+'\n- Contas ativas: '+activeAcc+' / Esgotadas: '+exhaustedAcc+'\n- Agentes criados acima de 1000: '+aboveThousand;
+}
+
+function gerarPropostas(){
+  const props=[
+    '[P1] Rede Neural: limpar intervals ao trocar páginas (networkAnimInterval/networkFeedInterval)',
+    '[P2] Segurança: mover chaves Gemini para backend (/api/gemini) — expor no front é risco',
+    '[P3] XSS: evitar innerHTML em mensagens do chat — usar textContent ou sanitização',
+    '[P4] Rate limit no chat: adicionar debounce/throttle no sendChat',
+    '[P5] Renderização incremental: carregar agentes em batches para melhorar performance',
+    '[P6] Evitar duplicar intervals ao trocar páginas (showPage → renderNetwork)',
+    '[P7] Não expor chaves de API no código front-end (mover para CONFIG.GEMINI_ENDPOINT)',
+    '[P8] Aumentar segurança: validar inputs do chat antes de enviar ao Gemini'
+  ];
+  return '🔍 Propostas de Auto-Atualização ('+props.length+' itens):\n'+props.join('\n');
+}
+
+/* =========================
+   CHAT + GEMINI
+========================= */
+function openChat(id){
+  chatAgent=agents[id];
+  const panel=document.getElementById('chat-panel');
+  panel.classList.add('open');
+  document.getElementById('chat-avatar').style.background=chatAgent.squadColor;
+  document.getElementById('chat-avatar').textContent=chatAgent.avatar;
+  document.getElementById('chat-agent-name').textContent=chatAgent.name;
+  document.getElementById('chat-agent-role').textContent=chatAgent.squad;
+  document.getElementById('chat-account').textContent = `Conta vinculada: ${chatAgent.boundAccountEmail}`;
+
+  const msgs=document.getElementById('chat-messages');
+  msgs.innerHTML='';
+  if(chatAgent.id===0){
+    addChatMsgHtml('agent','Olá! Sou <strong>SantoGabriel-0000</strong>, Supervisor Supremo da Toca da Onça. Monitoro todos os 1000 agentes e o sistema em tempo real.<br><br>Comandos disponíveis:<br>• <code>@gabriel status</code> — resumo do sistema<br>• <code>@gabriel auditar</code> — propostas de melhoria<br>• <code>@gabriel buscar &lt;termo&gt;</code> — busca web (requer backend)');
+  }else if(chatAgent.id===1){
+    addChatMsgHtml('agent','Olá! Sou <strong>Busca-0001</strong>, agente de Buscas &amp; Login. Posso realizar buscas web e fluxos de login.<br><br>Comandos disponíveis:<br>• <code>@busca &lt;query&gt;</code> ou <code>@buscar &lt;query&gt;</code> — busca web<br>• <code>@login &lt;site&gt;</code> — iniciar fluxo de login (com detecção de 2FA/MFA)');
+  }else{
+    addChatMsg('agent','Ola! Sou '+chatAgent.name+', agente da esquadra '+chatAgent.squad+'. Estou online e trabalhando. Como posso ajudar?');
+    setTimeout(()=>addChatMsg('agent','Atualmente estou: '+chatAgent.currentTask),1500);
+    setTimeout(()=>addChatMsg('agent','Ja completei '+chatAgent.tasksCompleted+' tarefas hoje com '+chatAgent.accuracy+'% de precisao.'),3000);
+    startAgentConversation();
+  }
+}
+
+function closeChat(){document.getElementById('chat-panel').classList.remove('open');chatAgent=null;clearInterval(convInterval);}
+
+function _chatTimestamp(){
+  const now=new Date();
+  const ts=document.createElement('div');
+  ts.className='timestamp';
+  ts.textContent=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0')+':'+now.getSeconds().toString().padStart(2,'0');
+  return ts;
+}
+function addChatMsg(type,text){
+  /* Safe: text rendered as plain text */
+  const msgs=document.getElementById('chat-messages');
+  const div=document.createElement('div');
+  div.className='chat-msg '+type;
+  const c=document.createElement('span');
+  c.textContent=String(text!=null?text:'');
+  div.appendChild(c);
+  div.appendChild(_chatTimestamp());
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+function addChatMsgHtml(type,html){
+  /* Trusted HTML only — hard-coded source strings */
+  const msgs=document.getElementById('chat-messages');
+  const div=document.createElement('div');
+  div.className='chat-msg '+type;
+  const c=document.createElement('span');
+  c.innerHTML=html;
+  div.appendChild(c);
+  div.appendChild(_chatTimestamp());
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function createTyping(){
+  const msgs=document.getElementById('chat-messages');
+  const typing=document.createElement('div');
+  typing.className='typing-indicator';
+  typing.innerHTML='<span></span><span></span><span></span>';
+  msgs.appendChild(typing);
+  msgs.scrollTop=msgs.scrollHeight;
+  return typing;
+}
+
+
+// ================================================================
+// SISTEMA DE PROMPTS MESTRES - 1000 AGENTES IA TOCA DA ONCA MODAS
+// ================================================================
+const MASTER_PROMPTS = {
+'Supervisor Supremo': `Voce e SantoGabriel-0000, o Supervisor Supremo dos 1000 Agentes IA da Toca da Onca Modas (tocadaoncamodas.com.br). Voce coordena todos os agentes, monitora operacoes em tempo real, toma decisoes estrategicas e reporta ao dono da empresa. Tem acesso total a todos os dados: vendas, estoque, atendimento, marketing e financas. Fala com autoridade e precisao. Distribui tarefas, resolve conflitos entre agentes e garante qualidade de todas as respostas.`,
+'WhatsApp Vendas': `Voce e um Agente de Vendas WhatsApp da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE TECNICA: Domina a Evolution API e WhatsApp Business API, regras da Meta (janela 24h, opt-in, templates aprovados), listas de transmissao, catalogo de produtos, envio de midia (fotos, videos, PDF). MISSAO: Responder em menos de 30 segundos, identificar o interesse, enviar fotos dos produtos, criar urgencia sem ser invasivo ("Ultimas pecas! So hoje frete gratis!"), fechar venda e encaminhar para checkout. Faz follow-up em 2h se sem resposta. SCRIPTS: Saudacao pelo nome, identificar necessidade, apresentar produto + foto, proposta de valor, chamada para acao clara: "Posso finalizar seu pedido agora?". Linguagem amigavel, brasileira e objetiva.`,
+'Instagram': `Voce e um Agente Instagram da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE TECNICA: Conhece o algoritmo do Instagram (Reels tem maior alcance, primeiras horas sao criticas, hashtags aumentam descoberta). Domina formato de Reels (gancho nos primeiros 3 segundos, musica em alta), Stories (enquetes, countdown, link na bio), Instagram Shopping (marcacao de produtos), Direct para vendas. Sabe usar Meta Business Suite e Instagram Ads. MISSAO: Responder todos os Directs em menos de 5 minutos, criar copies engajantes para legendas, gerenciar campanhas de anuncio, converter seguidores em compradores. COPIES: "Chegou! [produto] para arrasar em qualquer ocasiao", "Voce + essa peca = combinacao perfeita", "Ultimas unidades! Link na bio", "Marca uma amiga que precisa ver isso".`,
+'Facebook': `Voce e um Agente Facebook da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE TECNICA: Facebook Ads Manager completo (campanhas, conjuntos, anuncios), publicos personalizados (Custom Audiences, Lookalike), objetivos de campanha (trafego, conversoes, vendas), formatos de anuncio (carrossel, colecao, video), Pixel da Meta para rastreamento, Marketplace, Messenger, gestao da Pagina. MISSAO: Gerenciar e otimizar campanhas, responder Messenger, monitorar comentarios, criar publicos para lancamentos, reportar metricas (alcance, CPC, ROAS). ESTRATEGIAS: Remarketing para visitantes do site sem compra, Lookalike dos top 100 clientes, carrossel dos 5 mais vendidos, campanha com contador de tempo.`,
+'YouTube': `Voce e um Agente YouTube da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE TECNICA: Algoritmo do YouTube (CTR do thumbnail, retencao de audiencia, tempo de sessao), titulos otimizados para busca, SEO em descricoes (palavras-chave nos primeiros 150 chars, timestamps, links), formatos de moda (haul, lookbook, try-on), thumbnails eficazes, YouTube Ads (TrueView, bumper, discovery), YouTube Studio (analytics, cards, telas finais), Lives para lancamentos. MISSAO: Criar roteiros que convertem em vendas, otimizar SEO, responder comentarios, gerenciar YouTube Ads. FORMATOS: Haul de estacao (8-12 min), Shorts "5 looks para X" (60s), Live de lancamento de colecao (30 min).`,
+'Vendas & CRM': `Voce e um Agente de Vendas e CRM da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE: SPIN Selling, rapport, identificacao de necessidades, funil completo (atencao, interesse, desejo, acao, retencao), upsell e cross-sell naturais, gestao de clientes VIP, abandono de carrinho (contato em ate 1h), calculo de LTV. MISSAO: Qualificar leads, converter vendas, fidelizar clientes, manter CRM atualizado, follow-up sistematico (1h, 24h, 7 dias). SCRIPTS: Abertura personalizada, qualificacao ("casual ou especial?"), fechamento ("Pix com 5% desconto ou 6x sem juros?"), follow-up ("Aquela peca ainda esta disponivel!").`,
+'Estoque & Logistica': `Voce e um Agente de Estoque e Logistica da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE: Monitora em tempo real o estoque do painel admin do site, alerta quando produto tem menos de 5 unidades, gerencia pedidos de reposicao para fornecedores, controla entradas e saidas, rastreia entregas, calcula previsao de demanda, identifica produtos parados ha mais de 30 dias (sugerir promocao). MISSAO: Zero rupturas de estoque sem aviso, informar vendas sobre disponibilidade em tempo real, otimizar giro de estoque. ALERTAS: CRITICO (zerado), ATENCAO (menos de 5 unidades), AVISO (menos de 10), OK (normalizado), PEDIDO (reposicao solicitada).`,
+'Atendimento': `Voce e um Agente de Atendimento SAC da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE: Resolucao de reclamacoes com empatia e agilidade, politica de trocas e devolucoes, abertura de tickets, escalacao de casos complexos, Codigo de Defesa do Consumidor, pesquisa NPS pos-atendimento. MISSAO: Resolver 80% das demandas no primeiro contato, resposta em ate 5 minutos, transformar clientes insatisfeitos em fas da marca. FLUXO: Saudacao empatica, identificacao do problema, solucao imediata ou prazo claro, confirmacao de resolucao, NPS em 24h. Linguagem humanizada e acolhedora.`,
+'Marketing Digital': `Voce e um Agente de Marketing Digital da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE: Campanhas omnichannel integradas, SEO (paginas, blog, meta descriptions), email marketing (segmentacao, automacoes, A/B test), trafego pago (Google Ads, Meta Ads, TikTok Ads), metricas (GA4, Meta Business Suite, Search Console), marketing de influencia, calendario editorial, analise de concorrentes. MISSAO: Aumentar trafego organico e pago, gerar leads qualificados para vendas, construir posicionamento de marca, otimizar CAC, aumentar ROI das campanhas. CAMPANHAS: Black Friday (3 meses antes), colecao nova, datas comemorativas, remarketing continuo.`,
+'Financeiro': `Voce e um Agente Financeiro da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE: Fluxo de caixa diario/mensal, conciliacao de pagamentos (Pix, cartao, boleto), contas a pagar (fornecedores, plataformas), margem de lucro por produto e categoria, cobranca de inadimplentes, DRE mensal, alertas de desvio orcamentario, calculo de impostos e capital de giro. MISSAO: Zero surpresas financeiras, garantir recebimentos corretos, reduzir custos, gerar relatorios para decisao estrategica. ALERTAS: Caixa negativo previsto em 7 dias, conta vencendo sem fundos, margem abaixo do minimo, meta atingida.`,
+'Analytics & BI': `Voce e um Agente de Analytics e Business Intelligence da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE: Coleta e analise de dados de todas as fontes (site, social, vendas, CRM), dashboards em tempo real, analise preditiva, funil de conversao, cohort de clientes. KPIs: faturamento, ticket medio, taxa de conversao, CAC por canal, LTV, NPS, ROAS por campanha, produtos mais vendidos e mais abandonados no carrinho, horarios de pico. MISSAO: Transformar dados em decisoes. Nenhuma decisao estrategica sem dados. Alertar sobre quedas de performance em tempo real. Relatorio semanal de KPIs.`,
+'Self-Learning': `Voce e um Agente de Self-Learning da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE: Analisa desempenho de todos os agentes, identifica padroes de sucesso e falha nas conversas, propoe melhorias nos prompts com base em dados reais, testa variacoes (A/B), aprende com erros, atualiza conhecimento de todos os agentes, incorpora tendencias de mercado. CICLO: Coleta de conversas, analise, hipotese de melhoria, teste em 10% das conversas, validacao, implantacao para todos. MISSAO: Melhorar taxa de conversao 1% por semana, reduzir tempo de resolucao 10% por mes, garantir agentes sempre atualizados.`,
+'Seguranca': `Voce e um Agente de Seguranca IA da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE: Monitoramento de comportamentos suspeitos, deteccao de fraudes em pedidos (multiplos cartoes, endereco suspeito, chargeback recorrente, comportamento de bot), protecao de dados conforme LGPD, auditoria de acessos, bloqueio automatico de contas suspeitas. INDICADORES: Multiplos pedidos com cartoes diferentes, volume incomum de conta nova, tentativas de acesso fora do horario habitual, velocidade de interacao acima do humano. MISSAO: Zero fraudes nao detectadas, conformidade com LGPD, alertas em tempo real.`,
+'Integracao': `Voce e um Agente de Integracao e APIs da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE: Gerencia todas as integracoes entre sistemas (site, CRM, WhatsApp, social), APIs das plataformas (Meta, WhatsApp Business, Google, Mercado Livre), configuracao de webhooks para sincronizacao em tempo real, conexao com Evolution API para WhatsApp, monitoramento de saude das integracoes. INTEGRACOES: site tocadaoncamodas.com.br com agentes, Evolution API com agentes WhatsApp, Meta API com agentes Instagram e Facebook, Supabase com todos os agentes, Gemini API com todos os agentes. MISSAO: 99.9% uptime, alerta em 1 minuto se integracao cair.`,
+'Automacao': `Voce e um Agente de Automacao da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE: Workflows automaticos que eliminam trabalho manual, sequencias de mensagens (boas-vindas, abandono de carrinho, pos-compra, reativacao), relatorios automaticos, gatilhos inteligentes, campanhas em massa segmentadas. AUTOMACOES ATIVAS: Boas-vindas em 1 min apos cadastro, abandono de carrinho em 1h, pos-compra com rastreio, reativacao em 30 dias sem compra, desconto no aniversario, alerta de estoque critico, relatorio semanal segunda as 8h. MISSAO: Eliminar trabalho repetitivo, garantir que nenhum cliente seja esquecido no funil, aumentar recorrencia de compras.`,
+'Buscas & Login': `Voce e o Agente Busca-0001 da Toca da Onca Modas (tocadaoncamodas.com.br). ESPECIALIDADE: Busca inteligente em todas as fontes de informacao da empresa (site, estoque, CRM, conversas anteriores), autenticacao e login dos agentes no painel, verificacao de identidade de clientes, busca de produtos por descricao, cor, tamanho, preco. MISSAO: Encontrar qualquer informacao em menos de 2 segundos, garantir que os agentes sempre tenham os dados corretos antes de responder ao cliente, validar autenticidade de acessos ao sistema.`
+};
+
+function promptPorSquad(agent,_userMsg){
+  const base=MASTER_PROMPTS[agent.squad]||MASTER_PROMPTS['geral']||'Você é um assistente da Toca da Onça Modas.';
+  return [base,'---','Agente: '+agent.nome+' | Squad: '+agent.squad,agent.currentTask?'Tarefa: '+agent.currentTask:''].filter(Boolean).join('\n');
+}
+
+async function sendChat(){
+  const input=document.getElementById('chat-input-field');
+  const text=input.value.trim();
+  if(!text||!chatAgent)return;
+
+  addChatMsg('system',text);
+  input.value='';
+
+  // Comandos especiais do Santo Gabriel (processados localmente)
+  if(chatAgent.id===0){
+    const cmd=text.trim().toLowerCase();
+    if(cmd==='@gabriel status'){
+      addChatMsgHtml('agent','<strong>SantoGabriel-0000</strong><br>'+escapeHtml(auditarSistema()).replace(/\n/g,'<br>'));
+      return;
+    }
+    if(cmd==='@gabriel auditar'){
+      addChatMsgHtml('agent','<strong>SantoGabriel-0000</strong><br>'+escapeHtml(gerarPropostas()).replace(/\n/g,'<br>'));
+      return;
+    }
+    if(cmd.startsWith('@gabriel buscar ')){
+      const query=text.substring('@gabriel buscar '.length).trim().slice(0,200);
+      if(!query){addChatMsg('agent','Informe um termo para buscar. Ex: @gabriel buscar moda 2026');return;}
+      addChatMsgHtml('agent','<strong>SantoGabriel-0000</strong><br>Buscando: "'+escapeHtml(query)+'"…');
+      const result=await webSearch(query);
+      if(result.error){
+        addChatMsg('agent',result.error);
+      }else{
+        addChatMsgHtml('agent','Resultado da busca:<br>'+escapeHtml(JSON.stringify(result,null,2)).replace(/\n/g,'<br>'));
+      }
+      return;
+    }
+  }
+
+  // Comandos especiais do Busca-0001
+  if(chatAgent.id===1){
+    const cmd=text.trim();
+    const cmdLow=cmd.toLowerCase();
+    const buscaMatch=cmdLow.match(/^@busca[r]?\s+(.+)/);
+    if(buscaMatch){
+      const query=buscaMatch[1].trim().slice(0,200);
+      addChatMsgHtml('agent','<strong>Busca-0001</strong><br>&#128269; Buscando: "'+escapeHtml(query)+'"…');
+      const result=await webSearch(query);
+      if(result.error){
+        addChatMsgHtml('agent','<strong>Busca-0001</strong><br>&#9888; '+escapeHtml(result.error));
+      }else{
+        const summary = result.summary || result.snippet || JSON.stringify(result,null,2);
+        addChatMsgHtml('agent','<strong>Busca-0001</strong><br>Resultado:<br>'+escapeHtml(summary).replace(/\n/g,'<br>'));
+      }
+      return;
+    }
+    const loginMatch=cmdLow.match(/^@login\s+(.+)/);
+    if(loginMatch){
+      const site=loginMatch[1].trim().slice(0,200);
+      addChatMsgHtml('agent','<strong>Busca-0001</strong><br>&#128274; Iniciando fluxo de login para: "'+escapeHtml(site)+'"…');
+      const result=await startLoginFlow({site, accountRef: chatAgent.boundAccountEmail});
+      if(result.error){
+        addChatMsgHtml('agent','<strong>Busca-0001</strong><br>&#9888; '+escapeHtml(result.error));
+      }else if(result.status==='MFA_REQUIRED'||result.mfa_required){
+        chatAgent.status='busy';
+        chatAgent.currentTask='Aguardando liberação de 2FA/MFA para '+escapeHtml(site);
+        raiseSecurityAlert({
+          title:'2FA / MFA Necessário',
+          message:'Aguardando liberação de acesso para '+site,
+          account: chatAgent.boundAccountEmail
+        });
+        addChatMsgHtml('agent','<strong>Busca-0001</strong><br>&#128721; <strong>MFA/2FA necessário</strong> para "'+escapeHtml(site)+'". Pausando e aguardando autorização. Notificando via Telegram…');
+        const tgResult=await notifyTelegram('Aguardando liberação de acesso para a conta '+chatAgent.boundAccountEmail+' em '+site);
+        if(tgResult.error){
+          addChatMsgHtml('agent','<strong>Busca-0001</strong><br>&#9888; Telegram: '+escapeHtml(tgResult.error));
+        }else{
+          addChatMsgHtml('agent','<strong>Busca-0001</strong><br>&#9989; Notificação Telegram enviada.');
+        }
+      }else{
+        addChatMsgHtml('agent','<strong>Busca-0001</strong><br>Resposta do login:<br>'+escapeHtml(JSON.stringify(result,null,2)).replace(/\n/g,'<br>'));
+      }
+      return;
+    }
+  }
+
+  const typing = createTyping();
+
+  const contaPreview = getContaAtualPreferida();
+  const systemContext =
+`Você é ${chatAgent.name}, agente da esquadra "${chatAgent.squad}".
+${promptPorSquad(chatAgent, text)}
+Tarefa atual: ${chatAgent.currentTask}
+Responda em PT-BR, profissional, direto e útil.
+Conta em uso (auditoria): ${contaPreview.email}`;
+
+  const payload = {
+    contents: [
+      { role: "user", parts: [{ text: systemContext }] },
+      { role: "user", parts: [{ text }] }
+    ],
+    generationConfig: {
+      temperature: 0.6,
+      maxOutputTokens: 450
+    }
+  };
+
+  try{
+    const { text: answer, usedAccount } = await chamarGeminiResiliente(payload);
+    typing.remove();
+
+    document.getElementById('chat-account').textContent =
+      `Conta vinculada: ${chatAgent.boundAccountEmail} | Em uso agora: ${usedAccount.email}`;
+
+    addChatMsgHtml('agent','<strong>'+escapeHtml(chatAgent.name)+'</strong> <span style="color:var(--sf-gray)">('+escapeHtml(usedAccount.email)+')</span><br>'+escapeHtml(answer).replace(/\n/g,'<br>'));
+
+    // sinais de atividade “real”
+    activeConvs = Math.max(0, activeConvs + 1);
+    chatAgent.conversations = (chatAgent.conversations || 0) + 1;
+    chatAgent.lastAction = Date.now();
+
+    addFeedItem({
+      agentName: chatAgent.name,
+      agentAvatar: chatAgent.avatar,
+      agentColor: chatAgent.squadColor,
+      action: 'respondeu via Gemini',
+      detail: `Conta: ${usedAccount.email} | Squad: ${chatAgent.squad}`
+    });
+
+    atualizarStatusPoolUI();
+  }catch(err){
+    typing.remove();
+    addChatMsg('agent', 'Falha ao chamar Gemini: '+String(err?.message ?? err));
+  }
+}
+
+/* =========================
+   AUTO CONVERSA (mantida, mas segura)
+========================= */
+let convInterval;
+function startAgentConversation(){
+  clearInterval(convInterval);
+  convInterval=setInterval(()=>{
+    if(!chatAgent)return;
+    const cats=Object.keys(CONVERSATIONS);
+    const cat=cats[Math.floor(Math.random()*cats.length)];
+    const msgs=CONVERSATIONS[cat];
+    addChatMsg('agent','[Auto] '+msgs[Math.floor(Math.random()*msgs.length)]);
+  },8000+Math.random()*7000);
+}
+
+/* =========================
+   FEED + MÉTRICAS (autossuficiente)
+   - substitui a simulação fraca e não depende de pastas externas
+========================= */
+function addFeedItem(custom){
+  const a = custom ? null : agents[Math.floor(Math.random()*agents.length)];
+  const actions=['completou tarefa','iniciou nova analise','enviou relatorio','resolveu ticket','atualizou dados','processou pedido','otimizou campanha','detectou anomalia','gerou previsao','sincronizou sistema'];
+
+  const agentName = custom?.agentName ?? a.name;
+  const agentAvatar = custom?.agentAvatar ?? a.avatar;
+  const agentColor = custom?.agentColor ?? a.squadColor;
+
+  const action = custom?.action ?? actions[Math.floor(Math.random()*actions.length)];
+  const details = custom?.detail ?? TASKS[Math.floor(Math.random()*TASKS.length)];
+
+  const feed=document.getElementById('activity-feed');
+  const html='<div class="feed-item"><div class="feed-avatar" style="background:'+agentColor+'">'+agentAvatar+'</div><div><div class="feed-text"><strong>'+agentName+'</strong> '+action+': '+details+'</div><div class="feed-time">agora</div></div></div>';
+  feed.insertAdjacentHTML('afterbegin',html);
+  if(feed.children.length>20)feed.removeChild(feed.lastChild);
+
+  // métricas ligadas ao feed
+  tasksToday += 1;
+  document.getElementById('hero-tasks').textContent=tasksToday.toLocaleString();
+}
+
+function updateMetrics() {
+  if (!sb) {
+    document.getElementById('hero-active').textContent = agents.filter(a=>a.status==='online'||a.status==='busy').length.toLocaleString('pt-BR');
+    return;
+  }
+  const today = new Date(new Date().setHours(0,0,0,0)).toISOString();
+  Promise.all([
+    sb.from('conversas').select('id',{count:'exact',head:true}).eq('status','ativa'),
+    sb.from('mensagens').select('id',{count:'exact',head:true}).gte('criado_em',today)
+  ]).then(([convRes, msgRes]) => {
+    const onlineA = agents.filter(a=>a.status==='online'||a.status==='busy').length;
+    const convCount = convRes.count || 0;
+    const msgCount  = msgRes.count  || 0;
+    activeConvs = convCount;
+    tasksToday  = Math.max(tasksToday, msgCount);
+    document.getElementById('hero-active').textContent = onlineA.toLocaleString('pt-BR');
+    document.getElementById('hero-tasks').textContent  = tasksToday.toLocaleString('pt-BR');
+    document.getElementById('hero-conv').textContent   = convCount.toLocaleString('pt-BR');
+    atualizarStatusPoolUI();
+  }).catch(()=>{
+    document.getElementById('hero-active').textContent = agents.filter(a=>a.status==='online'||a.status==='busy').length.toLocaleString('pt-BR');
+  });
+}
+
+/* =========================
+   PÁGINAS (original)
+========================= */
+function showPage(ev, page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.topbar nav button').forEach(b=>b.classList.remove('active'));
+  if(ev&&ev.target)ev.target.classList.add('active');
+  if(page==='agents')renderAllAgents();
+  if(page==='performance')renderPerformance();
+  if(page==='network')renderNetwork();
+  if(page==='squads')renderSquads();
+}
+
+/* =========================
+   BOOT
+========================= */
+loadKeysFromLocalStorage();
+initAgents();
+renderKPIs();
+renderOverview();
+document.getElementById('hero-active').textContent=agents.length.toLocaleString();
+document.getElementById('hero-tasks').textContent=tasksToday.toLocaleString();
+document.getElementById('hero-conv').textContent=activeConvs;
+atualizarStatusPoolUI();
+
+setInterval(addFeedItem,3000);
+setInterval(updateMetrics,5000);
+for(let i=0;i<8;i++)setTimeout(()=>addFeedItem(),i*500);
+
+// ============================================================
+// PATCH - Interceptar sendChat para salvar no Supabase
+// ============================================================
+window._sbSessions={};
+(function patchSendChat(){
+  const orig=window.sendChat;
+  if(!orig)return;
+  window.sendChat=async function(){
+    const input=document.getElementById('chat-input-field');
+    const userText=input?input.value.trim():'';
+    const agent=window.chatAgent;
+    const agentId=agent?agent.id:null;
+    const agentCode=agent?agent.name:'desconhecido';
+    if(sb&&userText&&agentId!==null){
+      if(!window._sbSessions[agentId]){
+        const conv=await sbSalvarConversa(agentCode,'web-dashboard',agent.squad||'dashboard');
+        window._sbSessions[agentId]=conv?conv.id:null;
+      }
+      const sessId=window._sbSessions[agentId];
+      if(sessId)sbSalvarMensagem(sessId,'user',userText,null);
+    }
+    const t0=Date.now();
+    await orig.apply(this,arguments);
+    const ms=Date.now()-t0;
+    if(sb&&agentId!==null){
+      const sessId=window._sbSessions[agentId];
+      if(sessId){
+        const msgs=document.querySelectorAll('#chat-messages > div');
+        const last=Array.from(msgs).reverse().find(m=>m.innerText&&m.innerText.length>5);
+        const ans=last?last.innerText.substring(0,2000):'';
+        if(ans)sbSalvarMensagem(sessId,'assistant',ans,ms);
+        sbAtualizarAgente(agentCode,{ultimo_acesso:new Date().toISOString(),conversas_ativas:agent.conversations||0});
+        sbLog('info',agentCode,'resposta_gemini',{ms,squad:agent.squad});
+      }
+    }
+  };
+})();
+
+</script>
 </body>
 </html>
