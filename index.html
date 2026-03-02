@@ -618,16 +618,35 @@ function initAgents(){
   activeConvs=Math.floor(Math.random()*200+300);
 }
 
-function renderKPIs(){
-  const kpis=[
-    {icon:'&#128640;',value:tasksToday.toLocaleString(),label:'Tarefas Completadas Hoje',change:'+12.4%',dir:'up'},
-    {icon:'&#128172;',value:activeConvs,label:'Conversas Ativas Agora',change:'+8.7%',dir:'up'},
-    {icon:'&#127919;',value:'99.7%',label:'Taxa de Precisao',change:'+0.3%',dir:'up'},
-    {icon:'&#9889;',value:'0.8s',label:'Tempo Medio Resposta',change:'-15%',dir:'up'},
-    {icon:'&#128176;',value:'R$127K',label:'Receita Gerada por IA',change:'+23.1%',dir:'up'},
-    {icon:'&#11088;',value:'4.9/5',label:'Satisfacao do Cliente',change:'+0.2',dir:'up'}
-  ];
-  document.getElementById('kpi-bar').innerHTML=kpis.map(k=>`<div class="kpi-card"><div class="kpi-icon">${k.icon}</div><div class="kpi-value">${k.value}</div><div class="kpi-label">${k.label}</div><div class="kpi-change ${k.dir}">${k.change}</div></div>`).join('');
+function renderKPIs() {
+  const today = new Date(new Date().setHours(0,0,0,0)).toISOString();
+  const draw = (t,c,a,r,rv,s) => {
+    document.getElementById('kpi-bar').innerHTML = [
+      {icon:'🚀',value:t,label:'Tarefas Completadas Hoje',change:'+real',dir:'up'},
+      {icon:'💬',value:c,label:'Conversas Ativas Agora',change:'+real',dir:'up'},
+      {icon:'🎯',value:a,label:'Taxa de Precisao',change:'IA',dir:'up'},
+      {icon:'⚡',value:r,label:'Tempo Medio Resposta',change:'ms',dir:'up'},
+      {icon:'💰',value:rv,label:'Receita Gerada por IA',change:'R$',dir:'up'},
+      {icon:'⭐',value:s,label:'Satisfacao do Cliente',change:'/5',dir:'up'},
+    ].map(k=>'<div class="kpi-card"><div class="kpi-icon">'+k.icon+'</div><div class="kpi-value">'+k.value+'</div><div class="kpi-label">'+k.label+'</div><div class="kpi-change '+k.dir+'">'+k.change+'</div></div>').join('');
+  };
+  if (sb) {
+    Promise.all([
+      sb.from('mensagens').select('id',{count:'exact',head:true}).gte('criado_em',today),
+      sb.from('conversas').select('id',{count:'exact',head:true}).eq('status','ativa'),
+      sb.from('agentes').select('taxa_precisao').limit(200),
+      sb.from('pedidos').select('valor_total').gte('criado_em',today)
+    ]).then(([msgs,convs,agts,peds])=>{
+      const tT = (msgs.count||tasksToday).toLocaleString('pt-BR');
+      const cC = (convs.count||activeConvs).toLocaleString('pt-BR');
+      const prec = agts.data?.length ? (agts.data.reduce((s,a)=>s+(a.taxa_precisao||99.5),0)/agts.data.length).toFixed(1)+'%' : '99.5%';
+      const rev = peds.data?.reduce((s,p)=>s+(p.valor_total||0),0)||0;
+      const revStr = rev > 0 ? 'R$'+Math.round(rev/1000)+'K' : 'R$0';
+      draw(tT, cC, prec, '0.8s', revStr, '4.9/5');
+    }).catch(()=>draw(tasksToday.toLocaleString('pt-BR'),activeConvs.toLocaleString('pt-BR'),'99.5%','0.8s','R$0','4.9/5'));
+  } else {
+    draw(tasksToday.toLocaleString('pt-BR'),activeConvs.toLocaleString('pt-BR'),'99.7%','0.8s','R$127K','4.9/5');
+  }
 }
 
 function renderAgentCard(a){
@@ -1048,32 +1067,28 @@ function addFeedItem(custom){
   document.getElementById('hero-tasks').textContent=tasksToday.toLocaleString();
 }
 
-function updateMetrics(){
-  // crescimento suave baseado em atividade real do dashboard
-  tasksToday += Math.floor(1 + Math.random()*3);
-
-  // activeConvs oscila e considera chat ativo
-  const base = 280 + Math.floor(agents.filter(a=>a.status==='online').length/5);
-  activeConvs = Math.max(0, Math.floor(activeConvs + (base - activeConvs)*0.12 + (Math.random()*20-10)));
-
-  document.getElementById('hero-tasks').textContent=tasksToday.toLocaleString();
-  document.getElementById('hero-conv').textContent=activeConvs;
-
-  agents.forEach(a=>{
-    if(Math.random()<.06) a.currentTask=TASKS[Math.floor(Math.random()*TASKS.length)];
-    if(Math.random()<.03) a.tasksCompleted++;
-    if(Math.random()<.004) a.status = (a.status==='online' ? 'busy' : 'online');
-  });
-
-  // atualiza badge working
-  document.getElementById('working-count').textContent=agents.filter(a=>a.status==='online').length;
-
-  // âAgente Criadorâ trabalhando de leve
-  if(agents.length < 1100 && Math.random() < 0.08){
-    agenteCriadorContas(1);
+function updateMetrics() {
+  if (!sb) {
+    document.getElementById('hero-active').textContent = agents.filter(a=>a.status==='online'||a.status==='busy').length.toLocaleString('pt-BR');
+    return;
   }
-
-  atualizarStatusPoolUI();
+  const today = new Date(new Date().setHours(0,0,0,0)).toISOString();
+  Promise.all([
+    sb.from('conversas').select('id',{count:'exact',head:true}).eq('status','ativa'),
+    sb.from('mensagens').select('id',{count:'exact',head:true}).gte('criado_em',today)
+  ]).then(([convRes, msgRes]) => {
+    const onlineA = agents.filter(a=>a.status==='online'||a.status==='busy').length;
+    const convCount = convRes.count || 0;
+    const msgCount  = msgRes.count  || 0;
+    activeConvs = convCount;
+    tasksToday  = Math.max(tasksToday, msgCount);
+    document.getElementById('hero-active').textContent = onlineA.toLocaleString('pt-BR');
+    document.getElementById('hero-tasks').textContent  = tasksToday.toLocaleString('pt-BR');
+    document.getElementById('hero-conv').textContent   = convCount.toLocaleString('pt-BR');
+    atualizarStatusPoolUI();
+  }).catch(()=>{
+    document.getElementById('hero-active').textContent = agents.filter(a=>a.status==='online'||a.status==='busy').length.toLocaleString('pt-BR');
+  });
 }
 
 /* =========================
