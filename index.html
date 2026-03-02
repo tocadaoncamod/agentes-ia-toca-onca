@@ -94,6 +94,22 @@ footer{text-align:center;padding:20px;color:var(--sf-gray);font-size:12px;border
 .typing-indicator span:nth-child(2){animation-delay:.2s}
 .typing-indicator span:nth-child(3){animation-delay:.4s}
 @keyframes typing{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+/* Config IA Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center}.modal-overlay.open{display:flex}
+.modal-box{background:#fff;border-radius:var(--radius);padding:28px;width:540px;max-width:96vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-box h2{font-size:18px;font-weight:700;margin-bottom:4px}.modal-box .modal-sub{font-size:13px;color:var(--sf-gray);margin-bottom:20px}
+.key-row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:10px;align-items:center}
+.key-row input{padding:8px 12px;border:1px solid var(--sf-border);border-radius:8px;font-size:13px;outline:none;width:100%}.key-row input:focus{border-color:var(--sf-blue)}
+.key-row .toggle-btn{background:none;border:1px solid var(--sf-border);border-radius:8px;padding:8px 10px;cursor:pointer;font-size:14px;white-space:nowrap}
+.modal-actions{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
+.btn-primary{background:var(--sf-blue);color:#fff;border:none;padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600}
+.btn-secondary{background:none;border:1px solid var(--sf-border);padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px}
+.btn-danger-outline{background:none;border:1px solid var(--sf-red);color:var(--sf-red);padding:10px 20px;border-radius:20px;cursor:pointer;font-size:13px}
+/* Security Alert Banner */
+.security-alert{background:var(--sf-red);color:#fff;padding:12px 24px;display:none;align-items:center;gap:12px;position:sticky;top:56px;z-index:98}
+.security-alert.visible{display:flex}.security-alert .alert-icon{font-size:20px;flex-shrink:0}
+.security-alert .alert-body{flex:1}.security-alert .alert-title{font-weight:700;font-size:14px}.security-alert .alert-msg{font-size:12px;opacity:.9;margin-top:2px}
+.security-alert .alert-close{background:none;border:1px solid rgba(255,255,255,.5);color:#fff;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:12px;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -105,10 +121,35 @@ footer{text-align:center;padding:20px;color:var(--sf-gray);font-size:12px;border
     <button onclick="showPage(event,'performance')">Performance</button>
     <button onclick="showPage(event,'network')">Rede Neural</button>
     <button onclick="showPage(event,'squads')">Esquadras</button>
+    <button onclick="openConfigIA()">&#9881; Config IA</button>
   </nav>
   <div class="status-badge">
     <div class="pulse"></div>
     <span id="pool-status">1000 Agentes Ativos</span>
+  </div>
+</div>
+
+<!-- Security Alert Banner -->
+<div class="security-alert" id="security-alert">
+  <div class="alert-icon">&#128274;</div>
+  <div class="alert-body">
+    <div class="alert-title" id="security-alert-title">Alerta de Segurança</div>
+    <div class="alert-msg" id="security-alert-msg"></div>
+  </div>
+  <button class="alert-close" onclick="clearSecurityAlert()">Dispensar</button>
+</div>
+
+<!-- Config IA Modal -->
+<div class="modal-overlay" id="config-ia-modal" onclick="if(event.target===this)fecharConfigIA()">
+  <div class="modal-box">
+    <h2>&#9881; Config IA — Chaves Gemini</h2>
+    <p class="modal-sub">Suas chaves ficam <strong>apenas no localStorage</strong> do navegador e nunca são enviadas ao GitHub.</p>
+    <div id="key-rows"></div>
+    <div class="modal-actions">
+      <button class="btn-danger-outline" onclick="limparChavesModal()">Limpar</button>
+      <button class="btn-secondary" onclick="fecharConfigIA()">Fechar</button>
+      <button class="btn-primary" onclick="salvarChavesModal()">Salvar</button>
+    </div>
   </div>
 </div>
 
@@ -181,6 +222,8 @@ footer{text-align:center;padding:20px;color:var(--sf-gray);font-size:12px;border
 ========================= */
 const CONFIG={
   SEARCH_ENDPOINT:'/api/search',
+  LOGIN_ENDPOINT:'/api/login/start',
+  TELEGRAM_NOTIFY_ENDPOINT:'/api/notify/telegram',
   GEMINI_ENDPOINT:'/api/gemini',
   GEMINI_MODE:'auto'
 };
@@ -256,6 +299,76 @@ const API_KEYS_POOL = [
 ];
 let currentKeyIndex = 0;
 
+/* ---- localStorage key config ---- */
+const LOCALSTORAGE_KEYS_KEY = 'TOCADAONCA_GEMINI_KEYS_V1';
+
+function loadKeysFromLocalStorage(){
+  try{
+    const stored = localStorage.getItem(LOCALSTORAGE_KEYS_KEY);
+    if(!stored) return;
+    const parsed = JSON.parse(stored);
+    if(!Array.isArray(parsed)) return;
+    parsed.forEach((item,i)=>{
+      if(i < API_KEYS_POOL.length){
+        if(item.email) API_KEYS_POOL[i].email = item.email;
+        if(item.key)   API_KEYS_POOL[i].key   = item.key;
+      }
+    });
+  }catch(e){console.warn('loadKeysFromLocalStorage error',e);}
+}
+
+function openConfigIA(){
+  buildKeyRows();
+  document.getElementById('config-ia-modal').classList.add('open');
+}
+
+function fecharConfigIA(){
+  document.getElementById('config-ia-modal').classList.remove('open');
+}
+
+function buildKeyRows(){
+  const container = document.getElementById('key-rows');
+  container.innerHTML = '';
+  API_KEYS_POOL.forEach((c,i)=>{
+    const rowId = 'key-row-'+i;
+    const div = document.createElement('div');
+    div.className = 'key-row';
+    div.innerHTML =
+      '<input type="text" id="email-'+i+'" placeholder="email / label" value="'+escapeHtml(c.email)+'">' +
+      '<input type="password" id="apikey-'+i+'" placeholder="API Key '+(i+1)+'" value="'+escapeHtml(c.key.startsWith('SUA_CHAVE') ? '' : c.key)+'">' +
+      '<button class="toggle-btn" onclick="toggleKeyVisibility('+i+')">&#128065;</button>';
+    container.appendChild(div);
+  });
+}
+
+function toggleKeyVisibility(i){
+  const inp = document.getElementById('apikey-'+i);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function salvarChavesModal(){
+  const data = API_KEYS_POOL.map((_,i)=>({
+    email: (document.getElementById('email-'+i)||{}).value || API_KEYS_POOL[i].email,
+    key:   (document.getElementById('apikey-'+i)||{}).value || ''
+  }));
+  data.forEach((item,i)=>{
+    API_KEYS_POOL[i].email = item.email;
+    if(item.key) API_KEYS_POOL[i].key = item.key;
+    API_KEYS_POOL[i].status = 'active';
+  });
+  try{ localStorage.setItem(LOCALSTORAGE_KEYS_KEY, JSON.stringify(data)); }catch(e){console.warn(e);}
+  atualizarStatusPoolUI();
+  fecharConfigIA();
+}
+
+function limparChavesModal(){
+  if(!confirm('Limpar todas as chaves salvas no localStorage?')) return;
+  API_KEYS_POOL.forEach((c,i)=>{ c.key='SUA_CHAVE_'+(i+1); c.status='active'; });
+  try{ localStorage.removeItem(LOCALSTORAGE_KEYS_KEY); }catch(e){}
+  buildKeyRows();
+  atualizarStatusPoolUI();
+}
+
 function getContaAtualPreferida(){
   // tenta achar a próxima conta "active" com chave real
   for(let i=0;i<API_KEYS_POOL.length;i++){
@@ -275,9 +388,14 @@ function atualizarStatusPoolUI(){
   const active = API_KEYS_POOL.filter(c=>c.status==='active').length;
   const exhausted = API_KEYS_POOL.filter(c=>c.status==='exhausted').length;
   const current = API_KEYS_POOL[currentKeyIndex];
+  const temChaveReal = API_KEYS_POOL.some(c=>c.key && !c.key.startsWith('SUA_CHAVE'));
   const el = document.getElementById('pool-status');
   if(el){
-    el.textContent = `1000 Agentes Ativos | Contas: ${active} ativas / ${exhausted} esgotadas | Em uso: ${current.email}`;
+    if(!temChaveReal){
+      el.textContent = '⚠️ Nenhuma chave Gemini real configurada — clique em Config IA';
+    } else {
+      el.textContent = `1000 Agentes Ativos | Contas: ${active} ativas / ${exhausted} esgotadas | Em uso: ${current.email}`;
+    }
   }
 }
 
@@ -338,6 +456,47 @@ async function webSearch(query){
   }catch(e){
     return {error:'Busca web precisa de backend em /api/search; ainda não configurado.'};
   }
+}
+
+async function startLoginFlow({site, accountRef}){
+  try{
+    const resp=await fetch(CONFIG.LOGIN_ENDPOINT,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({site, accountRef})
+    });
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    return await resp.json();
+  }catch(e){
+    return {error:'Backend de login precisa de backend em /api/login/start; ainda não configurado.'};
+  }
+}
+
+async function notifyTelegram(message){
+  try{
+    const resp=await fetch(CONFIG.TELEGRAM_NOTIFY_ENDPOINT,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message})
+    });
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    return await resp.json();
+  }catch(e){
+    return {error:'Notificação Telegram precisa de backend em /api/notify/telegram; ainda não configurado.'};
+  }
+}
+
+function raiseSecurityAlert({title, message, account}){
+  const banner = document.getElementById('security-alert');
+  if(!banner) return;
+  document.getElementById('security-alert-title').textContent = title || 'Alerta de Segurança';
+  document.getElementById('security-alert-msg').textContent = (account ? '['+account+'] ' : '') + (message || '');
+  banner.classList.add('visible');
+}
+
+function clearSecurityAlert(){
+  const banner = document.getElementById('security-alert');
+  if(banner) banner.classList.remove('visible');
 }
 
 async function chamarGeminiResiliente(payload) {
@@ -402,12 +561,30 @@ function initAgents(){
     lastAction:Date.now(),
     boundAccountEmail:'supervisor@tocadaonca.ia'
   });
+  // Agente 0001: Busca-0001 — Buscas & Login
+  agents.push({
+    id:1,
+    name:'Busca-0001',
+    squad:'Buscas & Login',
+    squadColor:'#1b96ff',
+    squadIcon:'&#128269;',
+    specialty:'web_search_login',
+    avatar:'B',
+    status:'online',
+    currentTask:'Aguardando comandos de busca e login',
+    tasksCompleted:0,
+    accuracy:'99.5',
+    responseTime:'0.5s',
+    conversations:0,
+    lastAction:Date.now(),
+    boundAccountEmail: API_KEYS_POOL[1 % API_KEYS_POOL.length].email
+  });
   for(let i=0;i<1000;i++){
     const sq=SQUADS[i%SQUADS.length];
     const nm=AGENT_NAMES[i%AGENT_NAMES.length];
     agents.push({
-      id:i+1,
-      name:nm+'-'+(i+1).toString().padStart(4,'0'),
+      id:i+2,
+      name:nm+'-'+(i+2).toString().padStart(4,'0'),
       squad:sq.name,
       squadColor:sq.color,
       squadIcon:sq.icon,
@@ -627,6 +804,8 @@ function openChat(id){
   msgs.innerHTML='';
   if(chatAgent.id===0){
     addChatMsg('agent','Olá! Sou <strong>SantoGabriel-0000</strong>, Supervisor Supremo da Toca da Onça. Monitoro todos os 1000 agentes e o sistema em tempo real.<br><br>Comandos disponíveis:<br>• <code>@gabriel status</code> — resumo do sistema<br>• <code>@gabriel auditar</code> — propostas de melhoria<br>• <code>@gabriel buscar &lt;termo&gt;</code> — busca web (requer backend)');
+  }else if(chatAgent.id===1){
+    addChatMsg('agent','Olá! Sou <strong>Busca-0001</strong>, agente de Buscas &amp; Login. Posso realizar buscas web e fluxos de login.<br><br>Comandos disponíveis:<br>• <code>@busca &lt;query&gt;</code> ou <code>@buscar &lt;query&gt;</code> — busca web<br>• <code>@login &lt;site&gt;</code> — iniciar fluxo de login (com detecção de 2FA/MFA)');
   }else{
     addChatMsg('agent','Ola! Sou '+chatAgent.name+', agente da esquadra '+chatAgent.squad+'. Estou online e trabalhando. Como posso ajudar?');
     setTimeout(()=>addChatMsg('agent','Atualmente estou: '+chatAgent.currentTask),1500);
@@ -701,6 +880,52 @@ async function sendChat(){
         addChatMsg('agent',escapeHtml(result.error));
       }else{
         addChatMsg('agent','Resultado da busca:<br>'+escapeHtml(JSON.stringify(result,null,2)).replace(/\n/g,'<br>'));
+      }
+      return;
+    }
+  }
+
+  // Comandos especiais do Busca-0001
+  if(chatAgent.id===1){
+    const cmd=text.trim();
+    const cmdLow=cmd.toLowerCase();
+    const buscaMatch=cmdLow.match(/^@busca[r]?\s+(.+)/);
+    if(buscaMatch){
+      const query=buscaMatch[1].trim().slice(0,200);
+      addChatMsg('agent','<strong>Busca-0001</strong><br>&#128269; Buscando: "'+escapeHtml(query)+'"…');
+      const result=await webSearch(query);
+      if(result.error){
+        addChatMsg('agent','<strong>Busca-0001</strong><br>&#9888; '+escapeHtml(result.error));
+      }else{
+        const summary = result.summary || result.snippet || JSON.stringify(result,null,2);
+        addChatMsg('agent','<strong>Busca-0001</strong><br>Resultado:<br>'+escapeHtml(summary).replace(/\n/g,'<br>'));
+      }
+      return;
+    }
+    const loginMatch=cmdLow.match(/^@login\s+(.+)/);
+    if(loginMatch){
+      const site=loginMatch[1].trim().slice(0,200);
+      addChatMsg('agent','<strong>Busca-0001</strong><br>&#128274; Iniciando fluxo de login para: "'+escapeHtml(site)+'"…');
+      const result=await startLoginFlow({site, accountRef: chatAgent.boundAccountEmail});
+      if(result.error){
+        addChatMsg('agent','<strong>Busca-0001</strong><br>&#9888; '+escapeHtml(result.error));
+      }else if(result.status==='MFA_REQUIRED'||result.mfa_required){
+        chatAgent.status='busy';
+        chatAgent.currentTask='Aguardando liberação de 2FA/MFA para '+escapeHtml(site);
+        raiseSecurityAlert({
+          title:'2FA / MFA Necessário',
+          message:'Aguardando liberação de acesso para '+site,
+          account: chatAgent.boundAccountEmail
+        });
+        addChatMsg('agent','<strong>Busca-0001</strong><br>&#128721; <strong>MFA/2FA necessário</strong> para "'+escapeHtml(site)+'". Pausando e aguardando autorização. Notificando via Telegram…');
+        const tgResult=await notifyTelegram('Aguardando liberação de acesso para a conta '+chatAgent.boundAccountEmail+' em '+site);
+        if(tgResult.error){
+          addChatMsg('agent','<strong>Busca-0001</strong><br>&#9888; Telegram: '+escapeHtml(tgResult.error));
+        }else{
+          addChatMsg('agent','<strong>Busca-0001</strong><br>&#9989; Notificação Telegram enviada.');
+        }
+      }else{
+        addChatMsg('agent','<strong>Busca-0001</strong><br>Resposta do login:<br>'+escapeHtml(JSON.stringify(result,null,2)).replace(/\n/g,'<br>'));
       }
       return;
     }
@@ -841,6 +1066,7 @@ function showPage(ev, page){
 /* =========================
    BOOT
 ========================= */
+loadKeysFromLocalStorage();
 initAgents();
 renderKPIs();
 renderOverview();
