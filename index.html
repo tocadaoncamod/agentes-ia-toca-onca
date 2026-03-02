@@ -111,6 +111,7 @@ footer{text-align:center;padding:20px;color:var(--sf-gray);font-size:12px;border
 .security-alert .alert-body{flex:1}.security-alert .alert-title{font-weight:700;font-size:14px}.security-alert .alert-msg{font-size:12px;opacity:.9;margin-top:2px}
 .security-alert .alert-close{background:none;border:1px solid rgba(255,255,255,.5);color:#fff;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:12px;white-space:nowrap}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 <div class="topbar">
@@ -217,6 +218,20 @@ footer{text-align:center;padding:20px;color:var(--sf-gray);font-size:12px;border
 <footer>Toca da Onca Modas &copy; 2026 - Agentforce Platform - 1000 Agentes IA Autonomos</footer>
 
 <script>
+
+// ============================================================
+// SUPABASE - Banco de Dados em Tempo Real
+// ============================================================
+const SUPABASE_URL = 'https://tlzehxzgpihartdlqmnk.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_schhC7wxoVoj3X5NFMyRDA_4rlTOspO';
+let sb = null;
+async function initSupabase(){try{if(typeof window.supabase!=='undefined'){sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);console.log('Supabase OK - Toca da Onca IA');return true;}}catch(e){console.warn('Supabase:',e.message);}return false;}
+async function sbSalvarConversa(code,tel,plat){if(!sb)return null;try{const{data,error}=await sb.from('conversas').insert({agente_code:code,cliente_telefone:tel||'web-'+Date.now(),plataforma:plat||'dashboard',session_id:crypto.randomUUID(),status:'ativa'}).select().single();if(error)throw error;return data;}catch(e){console.warn('sbConv:',e.message);return null;}}
+async function sbSalvarMensagem(id,papel,txt,ms){if(!sb||!id)return;try{await sb.from('mensagens').insert({conversa_id:id,papel,conteudo:txt,tokens_usados:Math.ceil(txt.length/4),tempo_resposta_ms:ms||0});}catch(e){console.warn('sbMsg:',e.message);}}
+async function sbAtualizarAgente(code,campos){if(!sb)return;try{await sb.from('agentes').upsert({agent_code:code,...campos});}catch(e){}}
+async function sbLog(nivel,code,evento,det){if(!sb)return;try{await sb.from('logs_sistema').insert({nivel,agente_code:code,evento,detalhes:det||{}});}catch(e){}}
+window.addEventListener('load',()=>{initSupabase();});
+
 /* =========================
    CONFIG (endpoints e modo)
 ========================= */
@@ -1090,6 +1105,45 @@ atualizarStatusPoolUI();
 setInterval(addFeedItem,3000);
 setInterval(updateMetrics,5000);
 for(let i=0;i<8;i++)setTimeout(()=>addFeedItem(),i*500);
+
+// ============================================================
+// PATCH - Interceptar sendChat para salvar no Supabase
+// ============================================================
+window._sbSessions={};
+(function patchSendChat(){
+  const orig=window.sendChat;
+  if(!orig)return;
+  window.sendChat=async function(){
+    const input=document.getElementById('chat-input-field');
+    const userText=input?input.value.trim():'';
+    const agent=window.chatAgent;
+    const agentId=agent?agent.id:null;
+    const agentCode=agent?agent.name:'desconhecido';
+    if(sb&&userText&&agentId!==null){
+      if(!window._sbSessions[agentId]){
+        const conv=await sbSalvarConversa(agentCode,'web-dashboard',agent.squad||'dashboard');
+        window._sbSessions[agentId]=conv?conv.id:null;
+      }
+      const sessId=window._sbSessions[agentId];
+      if(sessId)sbSalvarMensagem(sessId,'user',userText,null);
+    }
+    const t0=Date.now();
+    await orig.apply(this,arguments);
+    const ms=Date.now()-t0;
+    if(sb&&agentId!==null){
+      const sessId=window._sbSessions[agentId];
+      if(sessId){
+        const msgs=document.querySelectorAll('#chat-messages > div');
+        const last=Array.from(msgs).reverse().find(m=>m.innerText&&m.innerText.length>5);
+        const ans=last?last.innerText.substring(0,2000):'';
+        if(ans)sbSalvarMensagem(sessId,'assistant',ans,ms);
+        sbAtualizarAgente(agentCode,{ultimo_acesso:new Date().toISOString(),conversas_ativas:agent.conversations||0});
+        sbLog('info',agentCode,'resposta_gemini',{ms,squad:agent.squad});
+      }
+    }
+  };
+})();
+
 </script>
 </body>
 </html>
