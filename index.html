@@ -94,6 +94,35 @@ footer{text-align:center;padding:20px;color:var(--sf-gray);font-size:12px;border
 .typing-indicator span:nth-child(2){animation-delay:.2s}
 .typing-indicator span:nth-child(3){animation-delay:.4s}
 @keyframes typing{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+/* Config Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:#fff;border-radius:var(--radius);padding:28px;width:540px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal-box h2{font-size:18px;font-weight:700;margin-bottom:4px;color:var(--sf-dark)}
+.modal-box .modal-sub{font-size:13px;color:var(--sf-gray);margin-bottom:20px}
+.key-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.key-row label{min-width:74px;font-size:13px;font-weight:600;color:var(--sf-gray)}
+.key-row input[type=password],.key-row input[type=text]{flex:1;padding:8px 12px;border:1px solid var(--sf-border);border-radius:8px;font-size:13px;outline:none}
+.key-row input[type=password]:focus,.key-row input[type=text]:focus{border-color:var(--sf-blue)}
+.key-row .email-inp{width:150px;flex:none;font-size:12px}
+.key-row .eye-btn{background:none;border:1px solid var(--sf-border);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:14px;flex-shrink:0}
+.modal-actions{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}
+.modal-actions button{padding:10px 20px;border-radius:20px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:.2s}
+.btn-save{background:var(--sf-green);color:#fff}.btn-save:hover{opacity:.85}
+.btn-clear{background:var(--sf-orange);color:#fff}.btn-clear:hover{opacity:.85}
+.btn-close-modal{background:var(--sf-border);color:var(--sf-text)}.btn-close-modal:hover{background:#d0d0d0}
+.modal-msg{font-size:13px;margin-top:12px;padding:10px 14px;border-radius:8px}
+.modal-msg.info{background:#e8f4fd;color:#0176d3}
+.modal-msg.warn{background:#fff4e0;color:#c14700}
+.modal-msg.ok{background:#e6f5ea;color:#2e844a}
+/* Security Alert Banner */
+.security-alert{background:var(--sf-red);color:#fff;padding:12px 24px;display:none;align-items:center;gap:12px;position:sticky;top:56px;z-index:98}
+.security-alert.active{display:flex}
+.security-alert .alert-icon{font-size:22px;flex-shrink:0}
+.security-alert .alert-body{flex:1}
+.security-alert .alert-title{font-weight:700;font-size:14px}
+.security-alert .alert-msg{font-size:13px;opacity:.9}
+.security-alert .alert-close{background:none;border:1px solid rgba(255,255,255,.5);color:#fff;padding:6px 14px;border-radius:16px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -105,11 +134,21 @@ footer{text-align:center;padding:20px;color:var(--sf-gray);font-size:12px;border
     <button onclick="showPage('performance')">Performance</button>
     <button onclick="showPage('network')">Rede Neural</button>
     <button onclick="showPage('squads')">Esquadras</button>
+    <button onclick="openConfigModal()" style="background:var(--sf-orange);border-color:var(--sf-orange)">&#128273; Config IA</button>
   </nav>
   <div class="status-badge">
     <div class="pulse"></div>
     <span id="pool-status">1000 Agentes Ativos</span>
   </div>
+</div>
+
+<div class="security-alert" id="security-alert">
+  <div class="alert-icon">&#128680;</div>
+  <div class="alert-body">
+    <div class="alert-title" id="security-alert-title">Alerta de Segurança</div>
+    <div class="alert-msg" id="security-alert-msg"></div>
+  </div>
+  <button class="alert-close" onclick="clearSecurityAlert()">Dispensar &#10005;</button>
 </div>
 
 <div class="hero">
@@ -174,6 +213,21 @@ footer{text-align:center;padding:20px;color:var(--sf-gray);font-size:12px;border
 </div>
 
 <footer>Toca da Onca Modas &copy; 2026 - Agentforce Platform - 1000 Agentes IA Autonomos</footer>
+
+<!-- Modal de Configuração de Chaves Gemini -->
+<div class="modal-overlay" id="config-modal" onclick="if(event.target===this)closeConfigModal()">
+  <div class="modal-box">
+    <h2>&#128273; Configuração de Chaves Gemini</h2>
+    <p class="modal-sub">As chaves são salvas <strong>apenas neste navegador</strong> (localStorage). Nunca são enviadas ao GitHub ou a terceiros.</p>
+    <div id="keys-form"></div>
+    <div id="modal-status-msg"></div>
+    <div class="modal-actions">
+      <button class="btn-save" onclick="saveKeysToLocalStorage()">&#128190; Salvar</button>
+      <button class="btn-clear" onclick="clearKeysFromLocalStorage()">&#128465; Limpar</button>
+      <button class="btn-close-modal" onclick="closeConfigModal()">Fechar</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* =========================
@@ -243,6 +297,31 @@ const API_KEYS_POOL = [
 ];
 let currentKeyIndex = 0;
 
+/* =========================
+   CONFIG (endpoints de backend)
+========================= */
+const CONFIG = {
+  SEARCH_ENDPOINT: '/api/search',
+  LOGIN_ENDPOINT: '/api/login/start',
+  TELEGRAM_NOTIFY_ENDPOINT: '/api/notify/telegram'
+};
+
+function loadKeysFromLocalStorage(){
+  try {
+    const saved = localStorage.getItem('TOCADAONCA_GEMINI_KEYS_V1');
+    if(!saved) return;
+    const keys = JSON.parse(saved);
+    if(!Array.isArray(keys)) return;
+    keys.forEach((k, i) => {
+      if(i < API_KEYS_POOL.length){
+        if(k.key && k.key.trim()) API_KEYS_POOL[i].key = k.key.trim();
+        if(k.email && k.email.trim()) API_KEYS_POOL[i].email = k.email.trim();
+        API_KEYS_POOL[i].status = 'active';
+      }
+    });
+  } catch(e){ console.warn('Erro ao carregar chaves do localStorage', e); }
+}
+
 function getContaAtualPreferida(){
   // tenta achar a próxima conta "active" com chave real
   for(let i=0;i<API_KEYS_POOL.length;i++){
@@ -262,9 +341,16 @@ function atualizarStatusPoolUI(){
   const active = API_KEYS_POOL.filter(c=>c.status==='active').length;
   const exhausted = API_KEYS_POOL.filter(c=>c.status==='exhausted').length;
   const current = API_KEYS_POOL[currentKeyIndex];
+  const temChaveReal = API_KEYS_POOL.some(c => c.key && !c.key.includes('SUA_CHAVE'));
   const el = document.getElementById('pool-status');
   if(el){
-    el.textContent = `1000 Agentes Ativos | Contas: ${active} ativas / ${exhausted} esgotadas | Em uso: ${current.email}`;
+    if(!temChaveReal){
+      el.textContent = '⚠ Sem chaves configuradas — use Config IA';
+      el.style.color = '#fe9339';
+    } else {
+      el.style.color = '';
+      el.textContent = `1000 Agentes Ativos | Contas: ${active} ativas / ${exhausted} esgotadas | Em uso: ${current.email}`;
+    }
   }
 }
 
@@ -335,12 +421,49 @@ let feedSeq=0;
 
 function initAgents(){
   agents=[];
-  for(let i=0;i<1000;i++){
+  // Agent 0: SantoGabriel-0000 (coordenador principal)
+  agents.push({
+    id:0,
+    name:'SantoGabriel-0000',
+    squad:'Atendimento',
+    squadColor:'#032d60',
+    squadIcon:'&#9889;',
+    avatar:'SG',
+    status:'online',
+    currentTask:'Coordenando operacoes e monitorando todos os agentes',
+    tasksCompleted:9999,
+    accuracy:'99.9',
+    responseTime:'0.1s',
+    conversations:0,
+    lastAction:Date.now(),
+    boundAccountEmail:API_KEYS_POOL[0].email,
+    specialty:'coordinator'
+  });
+  // Agent 1: Busca-0001 (especialista em buscas & login)
+  agents.push({
+    id:1,
+    name:'Busca-0001',
+    squad:'Buscas & Login',
+    squadColor:'#1b96ff',
+    squadIcon:'&#128269;',
+    avatar:'B1',
+    status:'online',
+    currentTask:'Aguardando comandos de busca e login',
+    tasksCompleted:0,
+    accuracy:'100.0',
+    responseTime:'0.5s',
+    conversations:0,
+    lastAction:Date.now(),
+    boundAccountEmail:API_KEYS_POOL[1].email,
+    specialty:'web_search_login'
+  });
+  // Agents 2..999 (numeracao 0002...)
+  for(let i=2;i<1000;i++){
     const sq=SQUADS[i%SQUADS.length];
     const nm=AGENT_NAMES[i%AGENT_NAMES.length];
     agents.push({
       id:i,
-      name:nm+'-'+(i+1).toString().padStart(4,'0'),
+      name:nm+'-'+i.toString().padStart(4,'0'),
       squad:sq.name,
       squadColor:sq.color,
       squadIcon:sq.icon,
@@ -471,6 +594,139 @@ function renderSquads(){
 }
 
 /* =========================
+   CONFIG MODAL (localStorage keys)
+========================= */
+function openConfigModal(){
+  const saved = localStorage.getItem('TOCADAONCA_GEMINI_KEYS_V1');
+  const keys = saved ? JSON.parse(saved) : [];
+  const form = document.getElementById('keys-form');
+  form.innerHTML = [0,1,2,3,4].map(i => {
+    const k = keys[i] || {};
+    return `<div class="key-row">
+      <label>Chave ${i+1}</label>
+      <input type="password" id="key-inp-${i}" placeholder="AIza..." value="${k.key ? k.key.replace(/"/g,'&quot;') : ''}">
+      <button class="eye-btn" onclick="toggleKeyVis(${i})" title="Mostrar/ocultar">&#128065;</button>
+      <input type="text" class="email-inp" id="email-inp-${i}" placeholder="email (opcional)" value="${k.email ? k.email.replace(/"/g,'&quot;') : ''}">
+    </div>`;
+  }).join('');
+  const statusEl = document.getElementById('modal-status-msg');
+  if(!saved || keys.length === 0){
+    statusEl.innerHTML = '<div class="modal-msg info">Nenhuma chave salva neste navegador.</div>';
+  } else {
+    statusEl.innerHTML = '<div class="modal-msg ok">&#10003; Chaves carregadas do localStorage.</div>';
+  }
+  document.getElementById('config-modal').classList.add('open');
+}
+
+function closeConfigModal(){
+  document.getElementById('config-modal').classList.remove('open');
+}
+
+function toggleKeyVis(i){
+  const inp = document.getElementById('key-inp-'+i);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function saveKeysToLocalStorage(){
+  const keys = [0,1,2,3,4].map(i => ({
+    key: document.getElementById('key-inp-'+i).value.trim(),
+    email: document.getElementById('email-inp-'+i).value.trim()
+  }));
+  const allEmpty = keys.every(k => !k.key);
+  if(allEmpty){
+    document.getElementById('modal-status-msg').innerHTML = '<div class="modal-msg warn">&#9888; Insira ao menos uma chave válida.</div>';
+    return;
+  }
+  const hasPlaceholder = keys.some(k => k.key && k.key.includes('SUA_CHAVE'));
+  if(hasPlaceholder){
+    document.getElementById('modal-status-msg').innerHTML = '<div class="modal-msg warn">&#9888; Remova os placeholders SUA_CHAVE antes de salvar.</div>';
+    return;
+  }
+  localStorage.setItem('TOCADAONCA_GEMINI_KEYS_V1', JSON.stringify(keys));
+  loadKeysFromLocalStorage();
+  atualizarStatusPoolUI();
+  document.getElementById('modal-status-msg').innerHTML = '<div class="modal-msg ok">&#10003; Chaves salvas com sucesso!</div>';
+}
+
+function clearKeysFromLocalStorage(){
+  localStorage.removeItem('TOCADAONCA_GEMINI_KEYS_V1');
+  const placeholders = ['SUA_CHAVE_1','SUA_CHAVE_2','SUA_CHAVE_3','SUA_CHAVE_4','SUA_CHAVE_5'];
+  const emails = ['conta1@gmail.com','conta2@gmail.com','conta3@gmail.com','conta4@gmail.com','conta5@gmail.com'];
+  placeholders.forEach((k,i) => {
+    API_KEYS_POOL[i].key = k;
+    API_KEYS_POOL[i].email = emails[i];
+    API_KEYS_POOL[i].status = 'active';
+  });
+  atualizarStatusPoolUI();
+  document.getElementById('modal-status-msg').innerHTML = '<div class="modal-msg info">Chaves removidas do localStorage.</div>';
+  [0,1,2,3,4].forEach(i => {
+    const ki = document.getElementById('key-inp-'+i);
+    const ei = document.getElementById('email-inp-'+i);
+    if(ki) ki.value = '';
+    if(ei) ei.value = '';
+  });
+}
+
+/* =========================
+   ALERTAS DE SEGURANÇA (2FA/MFA)
+========================= */
+function raiseSecurityAlert({title, message, account}){
+  document.getElementById('security-alert-title').textContent = title || 'Alerta de Segurança';
+  document.getElementById('security-alert-msg').textContent = (account ? '['+account+'] ' : '') + (message || '');
+  document.getElementById('security-alert').classList.add('active');
+}
+
+function clearSecurityAlert(){
+  document.getElementById('security-alert').classList.remove('active');
+}
+
+/* =========================
+   BACKEND SCAFFOLDING (search / login / telegram)
+========================= */
+async function webSearch(query){
+  try {
+    const resp = await fetch(CONFIG.SEARCH_ENDPOINT, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({query})
+    });
+    if(!resp.ok) throw new Error(resp.status+' '+resp.statusText);
+    const data = await resp.json();
+    return {ok:true, results:data.results||data, error:null};
+  } catch(e){
+    return {ok:false, results:[], error:String(e?.message??e)};
+  }
+}
+
+async function startLoginFlow({site, accountRef}){
+  try {
+    const resp = await fetch(CONFIG.LOGIN_ENDPOINT, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({site, accountRef})
+    });
+    if(!resp.ok) throw new Error(resp.status+' '+resp.statusText);
+    return await resp.json();
+  } catch(e){
+    return {ok:false, status:'ERROR', error:String(e?.message??e)};
+  }
+}
+
+async function notifyTelegram(message){
+  try {
+    const resp = await fetch(CONFIG.TELEGRAM_NOTIFY_ENDPOINT, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message})
+    });
+    if(!resp.ok) throw new Error(resp.status+' '+resp.statusText);
+    return {ok:true};
+  } catch(e){
+    return {ok:false, error:String(e?.message??e)};
+  }
+}
+
+/* =========================
    AGENTE CRIADOR DE INSTÂNCIAS
 ========================= */
 function agenteCriadorContas(qtd=1){
@@ -577,6 +833,43 @@ async function sendChat(){
 
   addChatMsg('system',text);
   input.value='';
+
+  // Intercept special commands for agent 0001 (Busca & Login)
+  if(chatAgent.id === 1){
+    const buscarMatch = text.match(/^@busc[ao]\s+(.+)/i);
+    const loginMatch = text.match(/^@login\s+(.+)/i);
+    if(buscarMatch){
+      const query = buscarMatch[1];
+      const t2 = createTyping();
+      const r = await webSearch(query);
+      t2.remove();
+      if(r.ok){
+        addChatMsg('agent','&#128269; Resultados para <em>'+query+'</em>:<br>'+JSON.stringify(r.results).slice(0,500));
+      } else {
+        addChatMsg('agent','&#128683; Busca falhou: '+r.error+'<br><em>Configure um backend em <code>'+CONFIG.SEARCH_ENDPOINT+'</code> para buscas reais.</em>');
+      }
+      return;
+    }
+    if(loginMatch){
+      const site = loginMatch[1];
+      const t2 = createTyping();
+      const r = await startLoginFlow({site, accountRef: chatAgent.boundAccountEmail});
+      t2.remove();
+      if(r && r.status === 'MFA_REQUIRED'){
+        chatAgent.status = 'busy';
+        chatAgent.currentTask = 'Aguardando 2FA para '+site;
+        raiseSecurityAlert({title:'2FA / MFA Requerido', message:'Aguardando liberação de acesso para '+site, account:chatAgent.name});
+        addChatMsg('agent','&#128680; Login em <strong>'+site+'</strong> requer autenticação 2FA/MFA. Agente pausado até liberação.');
+        const tg = await notifyTelegram('Aguardando liberação de acesso para a conta: '+site+' ('+chatAgent.name+')');
+        if(!tg.ok) addChatMsg('agent','&#9888; Backend Telegram não configurado ('+CONFIG.TELEGRAM_NOTIFY_ENDPOINT+'). Notificação não enviada.');
+      } else if(r && r.ok){
+        addChatMsg('agent','&#10003; Fluxo de login iniciado para: <strong>'+site+'</strong>');
+      } else {
+        addChatMsg('agent','&#128683; Login falhou: '+(r?.error||'erro desconhecido')+'<br><em>Configure o backend em <code>'+CONFIG.LOGIN_ENDPOINT+'</code></em>');
+      }
+      return;
+    }
+  }
 
   const typing = createTyping();
 
@@ -713,6 +1006,7 @@ function showPage(page){
 /* =========================
    BOOT
 ========================= */
+loadKeysFromLocalStorage();
 initAgents();
 renderKPIs();
 renderOverview();
