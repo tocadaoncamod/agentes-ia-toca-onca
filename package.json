@@ -1,0 +1,12 @@
+{
+  "name": "agentes-ia-toca-onca",
+  "version": "1.0.0",
+  "description": "AI Agents dashboard – Toca da Onça",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vercel dev"
+  }
+}
