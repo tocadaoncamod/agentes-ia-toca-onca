@@ -100,11 +100,11 @@ footer{text-align:center;padding:20px;color:var(--sf-gray);font-size:12px;border
 <div class="topbar">
   <div class="logo"><div class="icon">&#128025;</div>Toca da Onca Agentforce</div>
   <nav>
-    <button class="active" onclick="showPage('overview')">Overview</button>
-    <button onclick="showPage('agents')">Agentes</button>
-    <button onclick="showPage('performance')">Performance</button>
-    <button onclick="showPage('network')">Rede Neural</button>
-    <button onclick="showPage('squads')">Esquadras</button>
+    <button class="active" onclick="showPage(event,'overview')">Overview</button>
+    <button onclick="showPage(event,'agents')">Agentes</button>
+    <button onclick="showPage(event,'performance')">Performance</button>
+    <button onclick="showPage(event,'network')">Rede Neural</button>
+    <button onclick="showPage(event,'squads')">Esquadras</button>
   </nav>
   <div class="status-badge">
     <div class="pulse"></div>
@@ -176,6 +176,19 @@ footer{text-align:center;padding:20px;color:var(--sf-gray);font-size:12px;border
 <footer>Toca da Onca Modas &copy; 2026 - Agentforce Platform - 1000 Agentes IA Autonomos</footer>
 
 <script>
+/* =========================
+   CONFIG (endpoints e modo)
+========================= */
+const CONFIG={
+  SEARCH_ENDPOINT:'/api/search',
+  GEMINI_ENDPOINT:'/api/gemini',
+  GEMINI_MODE:'auto'
+};
+
+function escapeHtml(str){
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 /* =========================
    DADOS ORIGINAIS (mantidos)
 ========================= */
@@ -300,7 +313,42 @@ async function chamarGemini(payload, apiKey){
 }
 
 // Robô Gestor de Créditos (Troca de conta automática)
+async function chamarGeminiViaBackend(payload){
+  const resp=await fetch(CONFIG.GEMINI_ENDPOINT,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  });
+  if(!resp.ok) throw new Error('Backend Gemini HTTP '+resp.status);
+  const data=await resp.json();
+  const t=data?.text??data?.candidates?.[0]?.content?.parts?.map(p=>p?.text??'').join('')??'';
+  if(!t.trim()) throw new Error('Resposta vazia do backend Gemini.');
+  return t;
+}
+
+async function webSearch(query){
+  try{
+    const resp=await fetch(CONFIG.SEARCH_ENDPOINT,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({q:query})
+    });
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    return await resp.json();
+  }catch(e){
+    return {error:'Busca web precisa de backend em /api/search; ainda não configurado.'};
+  }
+}
+
 async function chamarGeminiResiliente(payload) {
+  if(CONFIG.GEMINI_MODE==='auto'){
+    try{
+      const text=await chamarGeminiViaBackend(payload);
+      return {text,usedAccount:{email:'backend(/api/gemini)'}};
+    }catch(e){
+      console.warn('[DEV] Backend Gemini indisponível, usando chave direta. Em produção, use apenas backend.',e.message);
+    }
+  }
   let tentativas = 0;
   while (tentativas < API_KEYS_POOL.length) {
     const contaAtual = getContaAtualPreferida();
@@ -332,14 +380,33 @@ let tasksToday=0;
 let activeConvs=0;
 let chatAgent=null;
 let feedSeq=0;
+let networkAnimInterval=null;
+let networkFeedInterval=null;
 
 function initAgents(){
   agents=[];
+  // Agente 0000: Santo Gabriel — Supervisor Supremo
+  agents.push({
+    id:0,
+    name:'SantoGabriel-0000',
+    squad:'Supervisor Supremo',
+    squadColor:'#d4af37',
+    squadIcon:'&#11088;',
+    avatar:'G',
+    status:'online',
+    currentTask:'Supervisionando e auditando os 1000 agentes em tempo real',
+    tasksCompleted:9999,
+    accuracy:'100.0',
+    responseTime:'0.1s',
+    conversations:0,
+    lastAction:Date.now(),
+    boundAccountEmail:'supervisor@tocadaonca.ia'
+  });
   for(let i=0;i<1000;i++){
     const sq=SQUADS[i%SQUADS.length];
     const nm=AGENT_NAMES[i%AGENT_NAMES.length];
     agents.push({
-      id:i,
+      id:i+1,
       name:nm+'-'+(i+1).toString().padStart(4,'0'),
       squad:sq.name,
       squadColor:sq.color,
@@ -438,7 +505,8 @@ function renderNetwork(){
     node.style.cssText=`left:${Math.random()*90+5}%;top:${Math.random()*85+5}%;background:${sq.color};box-shadow:0 0 8px ${sq.color}`;
     viz.appendChild(node);
   }
-  setInterval(()=>{
+  clearInterval(networkAnimInterval);
+  networkAnimInterval=setInterval(()=>{
     viz.querySelectorAll('.network-node').forEach(n=>{
       n.style.left=Math.random()*90+5+'%';
       n.style.top=Math.random()*85+5+'%';
@@ -446,7 +514,8 @@ function renderNetwork(){
     });
   },3000);
   const feed=document.getElementById('network-feed');
-  setInterval(()=>{
+  clearInterval(networkFeedInterval);
+  networkFeedInterval=setInterval(()=>{
     const a1=agents[Math.floor(Math.random()*agents.length)];
     const a2=agents[Math.floor(Math.random()*agents.length)];
     const msgs=['compartilhou insight de dados','solicitou colaboracao em tarefa','enviou alerta de prioridade','sincronizou modelo atualizado','reportou anomalia detectada'];
@@ -512,6 +581,36 @@ function agenteCriadorContas(qtd=1){
 }
 
 /* =========================
+   SANTO GABRIEL — SUPERVISOR
+========================= */
+function auditarSistema(){
+  const regular=agents.filter(a=>a.id>0);
+  const online=regular.filter(a=>a.status==='online').length;
+  const busy=regular.filter(a=>a.status==='busy').length;
+  const squadBusy={};
+  regular.forEach(a=>{if(a.status==='busy')squadBusy[a.squad]=(squadBusy[a.squad]||0)+1;});
+  const topBusy=Object.entries(squadBusy).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([s,c])=>s+'('+c+')').join(', ')||'nenhuma';
+  const activeAcc=API_KEYS_POOL.filter(c=>c.status==='active').length;
+  const exhaustedAcc=API_KEYS_POOL.filter(c=>c.status==='exhausted').length;
+  const aboveThousand=agents.filter(a=>a.id>1000).length;
+  return '📊 Resumo do Sistema:\n- Agentes regulares: '+regular.length+'\n- Online: '+online+' | Busy: '+busy+'\n- Squads mais ocupadas: '+topBusy+'\n- Contas ativas: '+activeAcc+' / Esgotadas: '+exhaustedAcc+'\n- Agentes criados acima de 1000: '+aboveThousand;
+}
+
+function gerarPropostas(){
+  const props=[
+    '[P1] Rede Neural: limpar intervals ao trocar páginas (networkAnimInterval/networkFeedInterval)',
+    '[P2] Segurança: mover chaves Gemini para backend (/api/gemini) — expor no front é risco',
+    '[P3] XSS: evitar innerHTML em mensagens do chat — usar textContent ou sanitização',
+    '[P4] Rate limit no chat: adicionar debounce/throttle no sendChat',
+    '[P5] Renderização incremental: carregar agentes em batches para melhorar performance',
+    '[P6] Evitar duplicar intervals ao trocar páginas (showPage → renderNetwork)',
+    '[P7] Não expor chaves de API no código front-end (mover para CONFIG.GEMINI_ENDPOINT)',
+    '[P8] Aumentar segurança: validar inputs do chat antes de enviar ao Gemini'
+  ];
+  return '🔍 Propostas de Auto-Atualização ('+props.length+' itens):\n'+props.join('\n');
+}
+
+/* =========================
    CHAT + GEMINI
 ========================= */
 function openChat(id){
@@ -526,10 +625,14 @@ function openChat(id){
 
   const msgs=document.getElementById('chat-messages');
   msgs.innerHTML='';
-  addChatMsg('agent','Ola! Sou '+chatAgent.name+', agente da esquadra '+chatAgent.squad+'. Estou online e trabalhando. Como posso ajudar?');
-  setTimeout(()=>addChatMsg('agent','Atualmente estou: '+chatAgent.currentTask),1500);
-  setTimeout(()=>addChatMsg('agent','Ja completei '+chatAgent.tasksCompleted+' tarefas hoje com '+chatAgent.accuracy+'% de precisao.'),3000);
-  startAgentConversation();
+  if(chatAgent.id===0){
+    addChatMsg('agent','Olá! Sou <strong>SantoGabriel-0000</strong>, Supervisor Supremo da Toca da Onça. Monitoro todos os 1000 agentes e o sistema em tempo real.<br><br>Comandos disponíveis:<br>• <code>@gabriel status</code> — resumo do sistema<br>• <code>@gabriel auditar</code> — propostas de melhoria<br>• <code>@gabriel buscar &lt;termo&gt;</code> — busca web (requer backend)');
+  }else{
+    addChatMsg('agent','Ola! Sou '+chatAgent.name+', agente da esquadra '+chatAgent.squad+'. Estou online e trabalhando. Como posso ajudar?');
+    setTimeout(()=>addChatMsg('agent','Atualmente estou: '+chatAgent.currentTask),1500);
+    setTimeout(()=>addChatMsg('agent','Ja completei '+chatAgent.tasksCompleted+' tarefas hoje com '+chatAgent.accuracy+'% de precisao.'),3000);
+    startAgentConversation();
+  }
 }
 
 function closeChat(){document.getElementById('chat-panel').classList.remove('open');chatAgent=null;}
@@ -577,6 +680,31 @@ async function sendChat(){
 
   addChatMsg('system',text);
   input.value='';
+
+  // Comandos especiais do Santo Gabriel (processados localmente)
+  if(chatAgent.id===0){
+    const cmd=text.trim().toLowerCase();
+    if(cmd==='@gabriel status'){
+      addChatMsg('agent','<strong>SantoGabriel-0000</strong><br>'+auditarSistema().replace(/\n/g,'<br>'));
+      return;
+    }
+    if(cmd==='@gabriel auditar'){
+      addChatMsg('agent','<strong>SantoGabriel-0000</strong><br>'+gerarPropostas().replace(/\n/g,'<br>'));
+      return;
+    }
+    if(cmd.startsWith('@gabriel buscar ')){
+      const query=text.substring('@gabriel buscar '.length).trim().slice(0,200);
+      if(!query){addChatMsg('agent','Informe um termo para buscar. Ex: @gabriel buscar moda 2026');return;}
+      addChatMsg('agent','<strong>SantoGabriel-0000</strong><br>Buscando: "'+escapeHtml(query)+'"…');
+      const result=await webSearch(query);
+      if(result.error){
+        addChatMsg('agent',escapeHtml(result.error));
+      }else{
+        addChatMsg('agent','Resultado da busca:<br>'+escapeHtml(JSON.stringify(result,null,2)).replace(/\n/g,'<br>'));
+      }
+      return;
+    }
+  }
 
   const typing = createTyping();
 
@@ -699,11 +827,11 @@ function updateMetrics(){
 /* =========================
    PÁGINAS (original)
 ========================= */
-function showPage(page){
+function showPage(ev, page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.topbar nav button').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
+  if(ev&&ev.target)ev.target.classList.add('active');
   if(page==='agents')renderAllAgents();
   if(page==='performance')renderPerformance();
   if(page==='network')renderNetwork();
